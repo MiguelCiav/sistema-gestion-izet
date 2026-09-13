@@ -1,13 +1,14 @@
-# HU08 - Alertas de Vencimiento de Reactivos
+# [HU08] Alertas de Vencimiento de Reactivos
 
-## Summary
-Mostrar avisos de caducidad para los reactivos que cuenten con fecha de vencimiento y estén próximos a expirar.
+### Descripción
+Como personal del laboratorio, quiero ver avisos visuales sobre reactivos próximos a vencer o vencidos, para prevenir el uso de químicos degradados en experimentos y análisis.
 
-## Description
-As a Técnico de Laboratorio, I want to visualizar alertas diferenciadas para reactivos próximos a vencer y vencidos, so that evitemos el uso de reactivos degradados y gestionemos los desechos químicos de forma segura.
+### Criterios de Aceptación
+1. El sistema evalúa dinámicamente la fecha de vencimiento de cada lote de reactivo frente a la fecha actual, ignorando reactivos que no requieran caducidad.
+2. Muestra indicadores visuales diferenciados para los reactivos que estén "Próximos a Vencer" (en los siguientes 30 días) y "Vencidos".
+3. Los reactivos vencidos se visualizan con una advertencia de uso crítico y requieren una confirmación explícita si se intenta registrar un consumo.
+4. Permite ordenar y filtrar el inventario según la fecha de vencimiento o el estado de alerta de caducidad.
 
-## Acceptance Criteria
-1. El sistema debe comparar diariamente la fecha de vencimiento de cada `StockReactivo` con la fecha actual del sistema.
-2. Se deben generar alertas visuales diferenciadas para reactivos "Próximos a Vencer" (rango configurable, ej. en los próximos 30 días) y "Vencidos".
-3. Los reactivos vencidos deben deshabilitarse automáticamente para el consumo regular, requiriendo una confirmación administrativa para ser descargados o descartados.
-4. La vista de inventario debe permitir ordenar o filtrar los reactivos según su fecha de vencimiento o su estado de alerta de caducidad.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/DASHBOARD.png` (Bloque "Alertas de reactivos": tarjeta de caducidad)
+* *(Nota: Pantalla o modal con lista detallada de reactivos vencidos/por expirar pendiente de diseño en Figma)*

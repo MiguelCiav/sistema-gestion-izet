@@ -1,13 +1,17 @@
-# HU10 - Recepción de Préstamos (Destino)
+# [HU10] Retorno y Cierre de Préstamos
 
-## Summary
-Registrar la recepción física y entrada en stock de un reactivo que ha sido prestado por el otro laboratorio.
+### Descripción
+Como personal del laboratorio, quiero registrar la devolución o fin de un préstamo otorgado a terceros, para reincorporar las existencias al inventario disponible y cerrar el ciclo del préstamo.
 
-## Description
-As a Técnico de Laboratorio (Destino), I want to registrar la entrada de un reactivo recibido en calidad de préstamo, so that incrementemos el stock local con el reactivo prestado y cerremos el ciclo de transferencia.
+### Criterios de Aceptación
+1. Proporciona una bandeja de control de préstamos activos con filtros por solicitante, reactivo y fecha de entrega.
+2. Permite registrar la devolución del insumo:
+   - En préstamos de **Frasco Completo:** reactiva la disponibilidad física del envase en el inventario.
+   - En préstamos de **Fracción / Alícuota:** permite reintegrar el remanente retornado (si aplica) sumándolo al stock.
+3. Permite asentar incidencias o justificaciones en la devolución (ej. frasco devuelto vacío por consumo total del ensayo, o extraviado).
+4. Actualiza el estado del préstamo a "Devuelto / Cerrado" y genera el registro correspondiente en la bitácora inmutable.
 
-## Acceptance Criteria
-1. El usuario del laboratorio de destino debe poder registrar la entrada del préstamo importando el archivo de transferencia generado por el laboratorio origen o ingresando manualmente los datos del préstamo (reactivo, cantidad, laboratorio origen).
-2. Al procesar la entrada, la cantidad recibida debe sumarse al `StockReactivo` del laboratorio destino de forma inmediata.
-3. El sistema debe registrar esta entrada en la bitácora local de movimientos con la etiqueta de "Préstamo Recibido" e identificarlo en el stock como "Préstamo de [Laboratorio Origen]".
-4. Debe existir un control para registrar la devolución del reactivo prestado para devolver el stock a su origen y marcar el préstamo como "Devuelto y Cerrado".
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/PRESTAMOS_DEV_1.png`
+* `prototype/wireframes_mobile_png/PRESTAMOS_DEV_2.png`
+* `prototype/wireframes_mobile_png/PRESTAMOS_DEV_3.png`

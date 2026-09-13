@@ -1,13 +1,17 @@
-# HU04 - Registro de Stock Físico
+# [HU04] Registro de Stock Físico
 
-## Summary
-Controlar el stock físico de reactivos en cada laboratorio, registrando la cantidad actual, ubicación física detallada, umbral de cantidad mínima y fecha de vencimiento.
+### Descripción
+Como personal del laboratorio, quiero registrar la cantidad física, ubicación, precio de adquisición y umbrales de los reactivos de mi laboratorio en la nube, para conocer la disponibilidad real, el valor económico y el estado del inventario local.
 
-## Description
-As a Técnico de Laboratorio, I want to registrar el stock físico de un reactivo en el almacén de mi laboratorio, so that conozcamos la existencia física exacta y la ubicación de cada lote de reactivos.
+### Criterios de Aceptación
+1. Permite asociar una existencia física (`StockReactivo`) a un reactivo del catálogo, vinculada al laboratorio activo configurado.
+2. Campos obligatorios: cantidad física actual (con unidad de medida), ubicación física detallada (armario, estante, refrigerador) y umbral de cantidad mínima antes de alerta.
+3. Permite registrar el último precio adquirido por lote o frasco en dólares (`USD`) o bolívares (`VES`), facilitando la valoración económica del stock.
+4. Permite ingresar una fecha de vencimiento (opcional, cuando aplique) validando que corresponda a una fecha válida.
+5. Distingue automáticamente si el stock corresponde a un insumo de uso común o de uso exclusivo del laboratorio.
+6. Las políticas de seguridad (RLS) en Supabase aíslan la gestión operativa del stock físico garantizando la autonomía de cada laboratorio.
 
-## Acceptance Criteria
-1. El usuario debe poder asociar existencias físicas (`StockReactivo`) a un reactivo registrado en el catálogo.
-2. Los campos obligatorios son: cantidad actual (en la unidad correspondiente como ml, g, etc.), ubicación física detallada (ej. "Estante A, Fila 2") y umbral de cantidad mínima antes de alerta.
-3. El campo fecha de vencimiento debe ser opcional. Si se ingresa, el sistema debe validar que sea una fecha futura a la del registro.
-4. Al guardar el stock, este debe indexarse automáticamente bajo el laboratorio local configurado en la máquina (LEPA o LEM).
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO.png`
+* `prototype/wireframes_mobile_png/INVENTARIO _ REACTIVOS.png`
+* `prototype/wireframes_mobile_png/INVENTARIO _ REACTIVOS _ DETALLE.png`

@@ -1,13 +1,16 @@
-# HU16 - Registro de Mantenimiento Ejecutado
+# [HU16] Registro de Mantenimiento Ejecutado
 
-## Summary
-Registrar la realización de calibraciones o limpiezas en la bitácora de mantenimiento (fecha, observaciones del técnico, responsable y reprogramación automática del próximo ciclo).
+### Descripción
+Como técnico o responsable de equipos, quiero registrar en la bitácora digital un mantenimiento completado (calibración o limpieza), para reiniciar el ciclo de alertas preventivas del equipo y archivar la evidencia técnica.
 
-## Description
-As a Técnico de Laboratorio / Técnico de Mantenimiento, I want to registrar un evento de mantenimiento completado sobre un equipo, so that la fecha de próxima calibración se actualice automáticamente y el histórico quede registrado de forma inmutable.
+### Criterios de Aceptación
+1. Permite registrar un evento de mantenimiento completado: fecha de ejecución, tipo (limpieza o calibración), observaciones/resultados técnicos y técnico responsable autenticado.
+2. Al registrar el mantenimiento, actualiza automáticamente la fecha del último mantenimiento en la ficha del equipo.
+3. Reprograma de forma automática la fecha del próximo mantenimiento preventivo según el intervalo configurado para el equipo.
+4. La entrada queda guardada de forma inmutable en la bitácora de mantenimientos asociada al equipo para auditorías de calidad.
 
-## Acceptance Criteria
-1. El usuario debe poder registrar un evento de mantenimiento completado sobre un equipo de medición.
-2. Los campos obligatorios son: fecha de ejecución, tipo de evento (Calibración o Limpieza), descripción del trabajo realizado, observaciones del técnico y nombre del técnico responsable.
-3. Al registrar el mantenimiento, el sistema debe actualizar de forma automática la fecha del último mantenimiento del equipo y recalcular la fecha del próximo mantenimiento según su frecuencia.
-4. La entrada debe quedar guardada de forma inmutable en la `BitacoraMantenimiento` asociada al equipo para auditorías de calidad.
+### Pantallas Relacionadas (Wireframes)
+* *(Nota: Pantalla/formulario para asentar mantenimiento completado y actualizar fechas preventivas pendiente de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.
