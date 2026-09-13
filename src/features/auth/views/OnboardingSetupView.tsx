@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { LogoContainer } from '../components/ui/LogoContainer'
-import { ProgressStepper } from '../components/ui/ProgressStepper'
-import { Input } from '../components/ui/Input'
-import { Button } from '../components/ui/Button'
-import { useAuth, useLab } from '../context'
+import { LogoContainer } from '../../../components/ui/LogoContainer'
+import { ProgressStepper } from '../../../components/ui/ProgressStepper'
+import { Input } from '../../../components/ui/Input'
+import { Button } from '../../../components/ui/Button'
+import { useAuth } from '../hooks/useAuth'
+import { useLab } from '../../laboratorios'
 
 export interface OnboardingSetupViewProps {
   onFinishOnboarding: () => void

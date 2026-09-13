@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { OnboardingSetupView } from '../../views/OnboardingSetupView'
-import { AuthProvider, LabProvider } from '../../context'
+import { OnboardingSetupView, AuthProvider } from '../../../features/auth'
+import { LabProvider } from '../../../features/laboratorios'
 
 describe('OnboardingSetupView Component', () => {
   const renderOnboarding = (onFinish = vi.fn()) => {

@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { AuthProvider, useAuth, LabProvider } from './context'
-import { LoginView } from './views/LoginView'
-import { OnboardingSetupView } from './views/OnboardingSetupView'
-import { DashboardView } from './views/DashboardView'
 import { Loader2 } from 'lucide-react'
+import { AuthProvider, useAuth, LoginView, OnboardingSetupView } from './features/auth'
+import { LabProvider } from './features/laboratorios'
+import { DashboardView } from './features/dashboard'
 
 export function AppContent(): React.JSX.Element {
   const { user, isGuest, isLoading } = useAuth()

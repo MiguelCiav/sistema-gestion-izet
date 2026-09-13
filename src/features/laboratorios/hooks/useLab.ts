@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { LabContext, type LabContextType } from './LabContext'
+import { LabContext, type LabContextType } from '../context/LabContext'
 
 export const useLab = (): LabContextType => {
   const context = useContext(LabContext)

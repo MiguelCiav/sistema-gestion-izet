@@ -30,6 +30,32 @@ Antes de iniciar tareas complejas, debes consultar y seguir las siguientes skill
 
 ---
 
+## 🏗️ Arquitectura Basada en Features (Feature-Driven Structure)
+El frontend sigue estrictamente un patrón modular por **features** (dominios funcionales):
+```text
+src/
+├── components/
+│   └── ui/               # Primitivas transversales del UI Kit Terra Lab (Button, Input, Card, NFPA704Diamond, etc.)
+├── features/             # Módulos encapsulados por dominio funcional (Vertical Slices)
+│   ├── auth/             # Autenticación, sesión y onboarding inicial
+│   ├── laboratorios/     # Gestión del contexto de sedes LEPA vs LEM
+│   ├── dashboard/        # Resumen general y alertas operativas
+│   ├── reactivos/        # [HU02-HU05, HU07-HU08] Catálogo, stock, consumo y alertas de reactivos
+│   ├── bitacora/         # [HU06] Registro inmutable de auditoría y movimientos
+│   ├── prestamos/        # [HU09-HU10] Préstamos y devoluciones a terceros
+│   └── vidrieria-equipos/# [HU11-HU16] Material de vidrio y bitácora de equipos
+├── lib/                  # Clientes e utilidades compartidas (supabase client, cn utility)
+├── types/                # Tipos globales de base de datos (database.types.ts)
+└── test/                 # Pruebas unitarias organizadas en components/ y features/
+```
+> [!IMPORTANT]
+> **REGLAS DE LA ARQUITECTURA DE FEATURES:**
+> 1. Cada feature (`src/features/<nombre>/`) debe contener sus propias vistas (`views/`), sub-componentes (`components/`), hooks (`hooks/`), contextos (`context/`) y servicios (`services/`).
+> 2. Cada feature debe tener un archivo `index.ts` que expone su **Public API**. Los demás módulos solo pueden importar lo exportado en dicho `index.ts`.
+> 3. Las primitivas visuales genéricas de diseño deben residir en `src/components/ui/`, **nunca** duplicarse dentro de una feature.
+
+---
+
 ## 📋 Protocolo de Desarrollo por Historia de Usuario (Vertical Slices)
 Para cada funcionalidad:
 1. **Verificar rama:** Asegurarse de trabajar en una rama `feat/hu<numero>-<descripcion>` desprendida de `main`.

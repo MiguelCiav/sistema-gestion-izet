@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { AlertTriangle, AlertCircle, LogOut, User, Shield } from 'lucide-react'
-import { TopBar } from '../components/ui/TopBar'
-import { BottomNavigation, type NavTabId } from '../components/ui/BottomNavigation'
-import { Card } from '../components/ui/Card'
-import { FloatingActionButton } from '../components/ui/FloatingActionButton'
-import { Modal } from '../components/ui/Modal'
-import { Button } from '../components/ui/Button'
-import { useAuth, useLab } from '../context'
+import { TopBar } from '../../../components/ui/TopBar'
+import { BottomNavigation, type NavTabId } from '../../../components/ui/BottomNavigation'
+import { Card } from '../../../components/ui/Card'
+import { FloatingActionButton } from '../../../components/ui/FloatingActionButton'
+import { Modal } from '../../../components/ui/Modal'
+import { Button } from '../../../components/ui/Button'
+import { useAuth } from '../../auth'
+import { useLab } from '../../laboratorios'
 
 export const DashboardView: React.FC = () => {
   const { user, profile, isGuest, signOut } = useAuth()

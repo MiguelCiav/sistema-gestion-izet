@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState, useMemo } from 'react'
-import { supabase } from '../lib/supabase'
-import type { Database } from '../types/database.types'
-import { useAuth } from './useAuth'
+import { supabase } from '../../../lib/supabase'
+import type { Database } from '../../../types/database.types'
+import { useAuth } from '../../auth'
 
 export type Laboratorio = Database['public']['Tables']['laboratorios']['Row']
 
@@ -165,4 +165,3 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 }
 
 export { LabContext }
-

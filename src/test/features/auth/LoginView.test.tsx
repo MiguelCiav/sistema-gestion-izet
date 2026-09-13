@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { LoginView } from '../../views/LoginView'
-import { AuthProvider, LabProvider } from '../../context'
+import { LoginView, AuthProvider } from '../../../features/auth'
+import { LabProvider } from '../../../features/laboratorios'
 
 describe('LoginView Component', () => {
   const renderLoginView = (onGoToOnboarding = vi.fn()) => {
