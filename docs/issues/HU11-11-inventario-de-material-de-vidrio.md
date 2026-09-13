@@ -1,13 +1,18 @@
-# HU11 - Inventario de Material de Vidrio
+# [HU11] Inventario de Material de Vidrio (En Stock vs En Uso)
 
-## Summary
-Registrar y actualizar la cantidad, ubicación física y tipo de material de vidrio por laboratorio.
+### Descripción
+Como personal de laboratorio, quiero clasificar el material de vidrio entre existencias en almacén ("En Stock") y material en mesas de trabajo ("En Uso"), y registrar transferencias entre ambos estados para un control físico realista.
 
-## Description
-As a Técnico de Laboratorio, I want to registrar y actualizar el inventario físico del material de vidrio (vasos de precipitado, matraces, tubos de ensayo), so that mantengamos un control cuantitativo y cualitativo de la disponibilidad del material de vidrio.
+### Criterios de Aceptación
+1. Permite registrar y gestionar tipos de material de vidrio (ej. Vaso de precipitado 250ml, Probeta 100ml, Matraz 500ml) asociados al laboratorio activo.
+2. Cada registro desglosa dos cantidades: `cantidad_en_stock` (en gaveta/reserva) y `cantidad_en_uso` (en mesones de trabajo activos).
+3. Permite registrar transferencias rápidas entre estados: "Mover a En Uso" (`stock -> en_uso`) y "Retornar a Stock" (`en_uso -> stock`).
+4. Muestra la cantidad total consolidada (`en_stock + en_uso`), ubicación física y último precio referencial de adquisición.
+5. El inventario de vidrio se presenta claramente diferenciado del catálogo de reactivos químicos.
 
-## Acceptance Criteria
-1. El sistema debe permitir registrar materiales de vidrio con los campos: nombre/tipo, cantidad disponible total y ubicación física detallada.
-2. El inventario de vidrio debe estar separado visualmente de la sección de reactivos químicos para evitar confusiones.
-3. Los usuarios deben poder actualizar la cantidad disponible por medio de botones de incremento o decremento rápidos (+1 / -1) en la vista de lista.
-4. Debe ser posible buscar materiales de vidrio por nombre, tipo o ubicación física.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO.png` (Acceso a la pestaña/categoría "Vidriería")
+* *(Nota: Pantallas de catálogo de vidriería discriminando "En Uso" vs "En Stock" y formulario de transferencia pendientes de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.

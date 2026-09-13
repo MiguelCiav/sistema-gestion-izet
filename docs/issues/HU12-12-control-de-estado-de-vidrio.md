@@ -1,13 +1,16 @@
-# HU12 - Control de Estado de Vidrio
+# [HU12] Control de Estado y Bajas de Vidrio
 
-## Summary
-Registrar las condiciones cualitativas (bueno, agrietado, inutilizable) del material de vidrio disponible.
+### Descripción
+Como personal de laboratorio, quiero registrar el estado cualitativo y reportar roturas o pérdidas del material de vidrio (en uso o en stock), para retirar utensilios peligrosos y justificar la merma.
 
-## Description
-As a Técnico de Laboratorio, I want to registrar y actualizar el estado físico o cualitativo del material de vidrio, so that identifiquemos material dañado o agrietado que pueda representar un riesgo de seguridad.
+### Criterios de Aceptación
+1. Permite registrar la condición cualitativa del material (Excelente, Agrietado, Manchado, Roto).
+2. Permite dar de baja material roto o inutilizable, especificando si la rotura ocurrió sobre el material "En Uso" o "En Stock".
+3. Al dar de baja material, el sistema descuenta automáticamente las unidades correspondientes del inventario disponible y solicita registrar el motivo de la baja y usuario responsable.
+4. Muestra advertencias visibles si existen piezas agrietadas o en observación para prevenir accidentes en el laboratorio.
 
-## Acceptance Criteria
-1. Cada registro de material de vidrio en el inventario debe incluir un campo de estado cualitativo (ej. "Excelente", "Agrietado", "Para Descarte").
-2. Si un material de vidrio es marcado con el estado "Para Descarte", su cantidad disponible para experimentos debe reducirse a cero automáticamente.
-3. Debe registrarse en un historial de incidencias de vidrio cuando un material sufra daños (quién reporta, qué material, tipo de daño y fecha).
-4. El sistema debe permitir filtrar rápidamente el material que esté agrietado o requiera reemplazo urgente.
+### Pantallas Relacionadas (Wireframes)
+* *(Nota: Pantallas de reporte de condición cualitativa y registro de bajas de material de vidrio pendientes de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.

@@ -1,13 +1,17 @@
-# HU13 - Inventario de Equipos de Medición
+# [HU13] Inventario de Equipos de Medición
 
-## Summary
-Registrar los equipos de medición por laboratorio, indicando marca, modelo y si requiere calibración, limpieza o ambas.
+### Descripción
+Como personal de laboratorio, quiero registrar los equipos de medición disponibles en el laboratorio en la nube, para tener un catálogo consolidado de los activos físicos y sus requerimientos de mantenimiento.
 
-## Description
-As a Técnico de Laboratorio, I want to registrar y gestionar el inventario de equipos de medición (balanzas, pH-metros, espectrofotómetros), so that identifiquemos y llevemos el control de los activos físicos de medición en cada laboratorio.
+### Criterios de Aceptación
+1. Permite registrar y gestionar equipos asociados al laboratorio activo: nombre del equipo, marca, modelo, código o activo patrimonial (UCV) y estado operativo.
+2. Permite configurar el tipo de mantenimiento preventivo requerido (limpieza, calibración o ambos) y su intervalo o frecuencia en días/meses.
+3. Cada equipo cuenta con una ficha técnica que muestra su estado actual ("Operativo", "En Mantenimiento", "Fuera de Servicio").
+4. Permite dar de baja o inactivar equipos del inventario preservando su historial.
 
-## Acceptance Criteria
-1. El sistema debe permitir registrar equipos de medición con los campos: nombre del equipo, marca, modelo, número de serie (opcional) y laboratorio asignado.
-2. Al registrar el equipo, se debe configurar si este requiere mantenimiento del tipo "Calibración", "Limpieza" o ambos.
-3. Cada equipo debe tener una ficha técnica editable donde se muestre su estado operativo actual ("Operativo", "En Mantenimiento", "Fuera de Servicio").
-4. El sistema debe indexar el equipo bajo el laboratorio local configurado en la máquina.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO.png` (Acceso a la pestaña/categoría "Equipos")
+* *(Nota: Pantallas de catálogo detallado de equipos, formulario de alta y ficha técnica con especificación de calibración pendientes de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.

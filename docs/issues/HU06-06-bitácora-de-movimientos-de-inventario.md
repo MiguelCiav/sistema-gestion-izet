@@ -1,13 +1,15 @@
-# HU06 - Bitácora de Movimientos de Inventario
+# [HU06] Bitácora de Movimientos de Inventario
 
-## Summary
-Consultar el historial de consumos y movimientos para que los administradores sepan quién consumió qué reactivo y en qué cantidad.
+### Descripción
+Como administrador o personal del laboratorio, quiero consultar un historial cronológico centralizado de todos los movimientos de stock, para auditar quién consumió o transfirió qué reactivo, en qué fecha y en qué cantidad.
 
-## Description
-As a Administrador / Jefe de Laboratorio, I want to visualizar una bitácora detallada de consumos y movimientos de stock, so that podamos auditar el uso de los recursos del laboratorio y saber quién usó qué insumo y cuánto.
+### Criterios de Aceptación
+1. Muestra un listado ordenado cronológicamente (más recientes primero) de todos los consumos, ajustes de stock y préstamos registrados.
+2. Cada entrada de la bitácora detalla de forma inmutable: fecha y hora, usuario autenticado responsable, reactivo, cantidad afectada, tipo de movimiento y laboratorio.
+3. Los registros de la bitácora son estrictamente de solo lectura (no modificables ni eliminables) para asegurar la fidelidad de auditoría.
+4. Permite aplicar filtros rápidos por tipo de movimiento (consumo, ajuste, préstamo), rango de fechas, usuario responsable o reactivo.
+5. Permite consultar movimientos filtrados por el laboratorio activo o de manera consolidada institucional para usuarios administradores.
 
-## Acceptance Criteria
-1. Debe existir una pantalla de bitácora que muestre en orden cronológico inverso todos los registros de consumo y movimientos de stock.
-2. Cada entrada de la bitácora de inventario debe mostrar: fecha/hora, usuario responsable, reactivo, cantidad consumida/movida y tipo de movimiento (consumo, ajuste manual, préstamo).
-3. La bitácora debe ser de solo lectura y no permitir edición ni eliminación de registros históricos para garantizar la integridad de la auditoría.
-4. Debe incluir filtros de búsqueda por rango de fechas, usuario y reactivo.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO _ REACTIVOS _ HISTORIAL.png`
+* `prototype/wireframes_mobile_png/HISTORIAL.png`

@@ -1,13 +1,17 @@
-# HU15 - Programación de Calibraciones y Limpiezas
+# [HU15] Programación de Calibraciones y Limpiezas
 
-## Summary
-Visualizar de forma consolidada el estado del próximo mantenimiento planificado (cuándo se hicieron y cuándo toca la siguiente calibración o limpieza).
+### Descripción
+Como administrador del laboratorio, quiero consultar en la plataforma web cuándo corresponde el próximo mantenimiento (calibración o limpieza) de cada equipo, para asegurar la precisión de las mediciones y el cuidado preventivo oportuno.
 
-## Description
-As a Técnico de Laboratorio, I want to programar la frecuencia de calibración o limpieza de cada equipo de medición, so that el sistema alerte visualmente cuando un mantenimiento preventivo esté próximo a vencer.
+### Criterios de Aceptación
+1. Muestra un panel consolidado de los equipos y su estado de mantenimiento (limpieza/calibración).
+2. El sistema calcula y muestra dinámicamente la fecha del próximo mantenimiento basándose en la fecha del último servicio y la frecuencia configurada.
+3. Emite alertas visuales (indicadores amarillos/rojos) cuando la fecha programada esté vencida o próxima a vencer en los siguientes 7 a 15 días.
+4. Permite filtrar y ordenar el listado por urgencia de atención o tipo de mantenimiento.
 
-## Acceptance Criteria
-1. El sistema debe permitir configurar la frecuencia de mantenimiento de cada equipo (ej. cada 30 días, 90 días, 180 días).
-2. El sistema debe calcular automáticamente la "fecha del próximo mantenimiento" basándose en la fecha del último mantenimiento registrado y la frecuencia configurada.
-3. Debe existir una pantalla de "Próximos Mantenimientos" que muestre un listado de equipos ordenado por urgencia cronológica de calibración o limpieza.
-4. El sistema debe alertar visualmente (color rojo o icono de advertencia) cuando un mantenimiento esté vencido o próximo a vencer en los siguientes 7 días.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/DASHBOARD.png` (Bloque "Alertas de equipos")
+* *(Nota: Pantalla consolidada de programación de calibraciones/limpiezas y vista de calendario preventivo pendientes de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.

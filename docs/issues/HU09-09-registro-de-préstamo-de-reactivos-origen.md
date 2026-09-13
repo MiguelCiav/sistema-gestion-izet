@@ -1,13 +1,18 @@
-# HU09 - Registro de Préstamo de Reactivos (Origen)
+# [HU09] Registro de Préstamos Generales (Frasco o Fracción)
 
-## Summary
-Registrar la salida de un reactivo en calidad de préstamo a otro laboratorio (cantidad, responsable del préstamo, laboratorio destino).
+### Descripción
+Como personal del laboratorio emisor, quiero registrar préstamos de reactivos a cualquier solicitante (interno, de otro laboratorio o externo), indicando si se entrega un frasco completo o una fracción, para mantener la trazabilidad de los insumos prestados en la nube.
 
-## Description
-As a Técnico de Laboratorio (Origen), I want to registrar la salida de un reactivo prestado al otro laboratorio, so that documentemos la transferencia temporal de insumos y mantengamos la trazabilidad del stock.
+### Criterios de Aceptación
+1. Permite registrar préstamos a cualquier persona solicitante, registrando: Nombre completo, Cédula / Identificación, Departamento / Laboratorio / Institución de procedencia y teléfono o correo de contacto.
+2. Permite seleccionar la modalidad de préstamo:
+   - **Frasco Completo:** Se presta el envase físico completo (el frasco se marca temporalmente como no disponible en el stock local).
+   - **Fracción / Alícuota:** Se entrega una cantidad específica (ej. 50 ml, 10 g), descontándose esa porción del stock local.
+3. Permite ingresar la fecha del préstamo, la fecha estimada de retorno y observaciones de uso.
+4. Genera el registro del préstamo en la base de datos centralizada bajo el estado "En Préstamo / Activo" y asienta el movimiento en la bitácora institucional vinculando al usuario autenticado.
 
-## Acceptance Criteria
-1. El usuario debe poder iniciar un registro de préstamo seleccionando el reactivo común, la cantidad a prestar y el laboratorio de destino (LEPA o LEM).
-2. Al guardar el préstamo, la cantidad prestada debe restarse temporalmente del stock local y marcarse bajo un estado de "Prestado - Pendiente de Recepción".
-3. El sistema debe permitir exportar este registro de préstamo en un formato de transferencia rápido (por ejemplo, un archivo cifrado JSON o código QR para importar en el laboratorio destino).
-4. El préstamo debe registrarse en la bitácora local de movimientos de inventario con el detalle del laboratorio destino y responsable.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/PRESTAMO.png`
+* `prototype/wireframes_mobile_png/PRESTAMO_2.png`
+* `prototype/wireframes_mobile_png/PRESTAMO_3.png`
+* `prototype/wireframes_mobile_png/PRESTAMO_4.png`

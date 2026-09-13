@@ -1,13 +1,15 @@
-# HU05 - Registro de Consumo de Reactivos
+# [HU05] Registro de Consumo de Reactivos
 
-## Summary
-Registrar cada salida o consumo de reactivos especificando el usuario, el reactivo, la cantidad consumida y la fecha.
+### Descripción
+Como personal del laboratorio, quiero registrar cada consumo de reactivo que realizo, para mantener el stock físico actualizado en tiempo real y registrar la trazabilidad del usuario autenticado.
 
-## Description
-As a Investigador / Estudiante / Técnico, I want to registrar la cantidad consumida de un reactivo específico, so that el inventario de stock físico se actualice automáticamente en tiempo real.
+### Criterios de Aceptación
+1. Permite seleccionar un reactivo del inventario físico del laboratorio activo y registrar un egreso o consumo.
+2. Vincula automáticamente al usuario autenticado (Supabase Auth) como responsable del consumo, solicitando la cantidad exacta consumida y la fecha.
+3. Descuenta automáticamente y de forma atómica la cantidad consumida del stock físico actual disponible.
+4. Valida que la cantidad a consumir sea estrictamente positiva y menor o igual al stock disponible (evita cantidades negativas).
+5. Genera de forma inmediata una entrada inmutable de tipo "Consumo" en la bitácora de movimientos.
 
-## Acceptance Criteria
-1. El sistema debe proveer una interfaz rápida y simple para registrar el consumo de un reactivo en stock.
-2. Los campos obligatorios para registrar el consumo son: nombre del usuario que consume, reactivo seleccionado, cantidad consumida y fecha del consumo (por defecto la fecha y hora actual).
-3. Al guardar el registro, la cantidad consumida debe restarse inmediatamente de la `cantidad_actual` en el stock correspondiente.
-4. El sistema debe validar que la cantidad consumida no sea mayor que la cantidad actualmente disponible en stock, arrojando una alerta si se intenta sobrepasar.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO _ MOVIMIENTOS _ CONSUMO.png`
+* `prototype/wireframes_mobile_png/INVENTARIO _ MOVIMIENTOS _ CONSUMO _ EXITOSO.png`

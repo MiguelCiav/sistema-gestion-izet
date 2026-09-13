@@ -1,14 +1,17 @@
-# HU02 - Catálogo Unificado de Reactivos
+# [HU02] Catálogo Unificado de Reactivos
 
-## Summary
-Crear y gestionar el catálogo de reactivos químicos con campos de código único, nombre, fórmula química, riesgo y valores del rombo de riesgo (NFPA 704).
+### Descripción
+Como personal científico o administrador, quiero registrar y gestionar reactivos químicos en un catálogo centralizado en la nube, indicando si son sustancias reguladas y su último precio referencial, para cumplir con normativas legales, evitar duplicidades y estimar costos de reposición.
 
-## Description
-As a Técnico de Laboratorio / Administrador, I want to registrar y gestionar reactivos en un catálogo unificado, so that tengamos un registro estandarizado de todos los tipos de reactivos químicos del instituto sin duplicidades.
+### Criterios de Aceptación
+1. Permite crear, consultar, actualizar y dar de baja lógica reactivos del catálogo centralizado.
+2. Campos obligatorios del reactivo: Código único del reactivo químico, Nombre, Fórmula química y Clasificación de riesgo.
+3. Soporta registrar y visualizar los 4 cuadrantes del rombo de riesgo NFPA 704 (Salud, Inflamabilidad, Inestabilidad y Riesgo Especial con valores numéricos 0-4 y códigos especiales estándar).
+4. Permite clasificar si el reactivo es **"Sustancia Regulada / Controlada"** y registrar las entidades fiscalizadoras correspondientes (ej. RESQUIMIC, CICPC, DAEX, MPPSP).
+5. Permite registrar el **último precio adquirido**, especificando el monto y la moneda (`USD` o `VES`) con su fecha de registro referencial.
+6. Al ser un catálogo centralizado en la nube (Supabase), cualquier reactivo registrado queda inmediatamente disponible como referencia para las existencias físicas de LEPA y LEM.
+7. Valida la integridad referencial: no permite la eliminación física de reactivos que cuenten con stock físico o bitácora histórica de consumo.
 
-## Acceptance Criteria
-1. El sistema debe permitir registrar un reactivo en el catálogo con los campos: código único del reactivo (ID químico), nombre comercial/químico, fórmula química, clasificación de riesgo y los cuatro valores del rombo de riesgo NFPA 704 (Salud, Inflamabilidad, Inestabilidad, Riesgo Especial).
-2. El código único del reactivo (e.g., código CAS o interno normalizado) debe ser obligatorio y validarse para evitar duplicados en el catálogo local.
-3. Múltiples existencias o lotes físicos de reactivos del mismo tipo en los almacenes deben referenciar a un mismo registro único del catálogo.
-4. Los usuarios pueden buscar reactivos en el catálogo por nombre, código único o fórmula química.
-5. Los campos del rombo de riesgo NFPA 704 deben validarse para permitir únicamente valores numéricos del 0 al 4 y caracteres especiales válidos para el riesgo específico.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INVENTARIO _ REACTIVOS.png`
+* `prototype/wireframes_mobile_png/INVENTARIO _ REACTIVOS _ DETALLE.png`

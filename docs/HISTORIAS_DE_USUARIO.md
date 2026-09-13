@@ -1,34 +1,35 @@
 # Historias de Usuario Propuestas: Sistema de Gestión Automatizado LEPA-LEM
 
-Este documento recopila las historias de usuario propuestas para el desarrollo del **Sistema de Gestión Automatizado LEPA-LEM**, organizadas por módulos y clasificadas según su relevancia para el **Producto Mínimo Viable (MVP)** en función de la restricción de **100 horas de desarrollo**.
+Este documento recopila las historias de usuario propuestas para el desarrollo del **Sistema de Gestión Automatizado LEPA-LEM**, organizadas por módulos y adaptadas a una arquitectura Cloud / Jamstack (**Supabase** para base de datos y autenticación, **Vercel / Cloudflare Pages** para el frontend), bajo la restricción metodológica de **100 horas de desarrollo**.
 
 ---
 
-## Módulo 1: Configuración de Infraestructura y Datos Maestros (Core - MVP)
-* **HU01 - Configuración de Laboratorio Local:** Inicializar la aplicación seleccionando el laboratorio físico (LEPA o LEM) para la operación independiente en la red local de cada máquina.
-* **HU02 - Catálogo Unificado de Reactivos:** Crear y gestionar el catálogo de reactivos químicos con campos de código único, nombre, fórmula química, riesgo y valores del rombo de riesgo (NFPA 704).
-* **HU03 - Consistencia de Códigos Compartidos:** Validar y asegurar que los reactivos compartidos por ambos laboratorios utilicen exactamente la misma codificación unificada.
+## Módulo 1: Autenticación, Contexto y Datos Maestros (Core - MVP)
+* **HU01 - Autenticación y Contexto de Laboratorio:** Iniciar sesión de forma segura y establecer el contexto del laboratorio activo (LEPA o LEM) para la gestión web de datos.
+* **HU02 - Catálogo Unificado de Reactivos:** Crear y gestionar el catálogo centralizado de reactivos químicos con código único, nombre, fórmula, riesgo, rombo NFPA 704, clasificación de **sustancia regulada** y **último precio adquirido** (USD/VES).
+* **HU03 - Consistencia de Códigos Compartidos:** Garantizar la unicidad y consistencia relacional de códigos de reactivos compartidos entre laboratorios en la base de datos centralizada.
 
 ## Módulo 2: Control de Inventario y Existencias (Core - MVP)
-* **HU04 - Registro de Stock Físico:** Controlar el stock físico de reactivos en cada laboratorio, registrando la cantidad actual, ubicación física detallada, umbral de cantidad mínima y fecha de vencimiento (cuando aplique).
-* **HU05 - Registro de Consumo de Reactivos:** Registrar cada salida o consumo de reactivos especificando el usuario, el reactivo, la cantidad consumida y la fecha.
-* **HU06 - Bitácora de Movimientos de Inventario:** Consultar el historial de consumos y movimientos para que los administradores sepan quién consumió qué reactivo y en qué cantidad.
-* **HU07 - Alertas Visuales de Stock Mínimo:** Visualizar notificaciones o alertas en la interfaz de usuario cuando un reactivo descienda de su umbral mínimo configurado.
-* **HU08 - Alertas de Vencimiento de Reactivos:** Mostrar avisos de caducidad para los reactivos que cuenten con fecha de vencimiento y estén próximos a expirar.
+* **HU04 - Registro de Stock Físico:** Controlar el stock físico de reactivos por laboratorio en la nube, registrando cantidad, ubicación física, umbral mínimo, caducidad y último precio de adquisición.
+* **HU05 - Registro de Consumo de Reactivos:** Registrar salidas o consumos de reactivos con descuento automático de stock y trazabilidad del usuario autenticado.
+* **HU06 - Bitácora de Movimientos de Inventario:** Consultar el historial inmutable de movimientos y consumos para auditorías institucionales de recursos.
+* **HU07 - Alertas Visuales de Stock Mínimo:** Visualizar una advertencia persistente y única en la interfaz únicamente cuando el reactivo descienda de su umbral sin llegar a cero ($0 < \text{stock} \le \text{umbral}$).
+* **HU08 - Alertas de Vencimiento de Reactivos:** Mostrar avisos de caducidad para los reactivos próximos a expirar o vencidos.
 
-## Módulo 3: Préstamos Inter-Laboratorios (MVP - Crítico por Requisitos)
-* **HU09 - Registro de Préstamo de Reactivos (Origen):** Registrar la salida de un reactivo en calidad de préstamo a otro laboratorio (cantidad, responsable del préstamo, laboratorio destino).
-* **HU10 - Recepción de Préstamos (Destino):** Registrar la recepción física y entrada en stock de un reactivo que ha sido prestado por el otro laboratorio.
+## Módulo 3: Préstamos de Laboratorio (MVP - Crítico por Requisitos)
+* **HU09 - Registro de Préstamos Generales (Frasco o Fracción):** Registrar la salida de préstamos a cualquier persona solicitante (interna o externa), soportando frasco completo o alícuota/fracción.
+* **HU10 - Retorno y Cierre de Préstamos:** Controlar préstamos activos, registrar la devolución de frascos o remanentes de sustancias y asentar incidencias o cierre definitivo.
 
 ## Módulo 4: Control de Material de Vidrio (Baja Prioridad - Fuera del MVP)
-* **HU11 - Inventario de Material de Vidrio:** Registrar y actualizar la cantidad, ubicación física y tipo de material de vidrio por laboratorio.
-* **HU12 - Control de Estado de Vidrio:** Registrar las condiciones cualitativas (bueno, agrietado, inutilizable) del material de vidrio disponible.
+* **HU11 - Inventario de Material de Vidrio (En Stock vs En Uso):** Registrar y gestionar utensilios de vidrio diferenciando cantidades "En Stock" (reserva) y "En Uso" (mesones), con transferencias entre estados.
+* **HU12 - Control de Estado y Bajas de Vidrio:** Registrar la condición cualitativa y reportar roturas o mermas distinguiendo si el material estaba en uso o en stock.
 
 ## Módulo 5: Gestión y Bitácoras de Equipos (Baja Prioridad - Fuera del MVP)
-* **HU13 - Inventario de Equipos de Medición:** Registrar los equipos de medición por laboratorio, indicando marca, modelo y si requiere calibración, limpieza o ambas.
-* **HU14 - Bitácora de Uso de Equipos:** Registrar el uso diario de los equipos de medición (quién lo usó, qué equipo, fecha, horas de uso y el tipo de uso o experimento).
-* **HU15 - Programación de Calibraciones y Limpiezas:** Visualizar de forma consolidada el estado del próximo mantenimiento planificado (cuándo se hicieron y cuándo toca la siguiente calibración o limpieza).
-* **HU16 - Registro de Mantenimiento Ejecutado:** Registrar la realización de calibraciones o limpiezas en la bitácora de mantenimiento (fecha, observaciones del técnico, responsable y reprogramación automática del próximo ciclo).
+* **HU13 - Inventario de Equipos de Medición:** Registrar los equipos de medición por laboratorio, indicando marca, modelo, activo patrimonial (UCV) y tipo de mantenimiento preventivo.
+* **HU14 - Bitácora de Uso de Equipos:** Registrar el uso diario de los equipos de medición desde cualquier dispositivo web (quién, qué equipo, fecha, duración y fin).
+* **HU15 - Programación de Calibraciones y Limpiezas:** Visualizar de forma consolidada el estado y cronograma del próximo mantenimiento planificado.
+* **HU16 - Registro de Mantenimiento Ejecutado:** Registrar la realización de calibraciones o limpiezas en la bitácora de mantenimiento y reprogramar el siguiente ciclo.
 
-## Módulo 6: Reportes y Listados (Prioridad Media)
-* **HU17 - Exportación de Stock Crítico (PDF/CSV):** Exportar listados automatizados de reactivos críticos o con existencias por debajo del umbral mínimo de forma consolidada o por dependencia.
+## Módulo 6: Reportes, Valoración y Misceláneos (Prioridad Media)
+* **HU17 - Exportación de Stock Crítico y Regulados (PDF/CSV):** Exportar listados de reactivos críticos, sustancias reguladas e inventarios valorizados (USD/VES) en formatos PDF y CSV directamente desde el navegador.
+* **HU18 - Inventario y Control de Misceláneos:** Registrar y controlar artículos misceláneos (oficina, mobiliario, consumibles) con unidades de medida personalizadas, último precio y umbral de alerta.

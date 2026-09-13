@@ -1,13 +1,16 @@
-# HU14 - Bitácora de Uso de Equipos
+# [HU14] Bitácora de Uso de Equipos
 
-## Summary
-Registrar el uso diario de los equipos de medición (quién lo usó, qué equipo, fecha, horas de uso y el tipo de uso o experimento).
+### Descripción
+Como personal o investigador del laboratorio, quiero registrar el uso diario de los equipos de medición desde cualquier dispositivo web, para llevar registro del desgaste y trazabilidad experimental del personal responsable.
 
-## Description
-As a Investigador / Estudiante / Técnico, I want to registrar el uso diario de los equipos de medición, so that rastreemos la utilización de los equipos y contemos con un registro histórico en caso de fallas.
+### Criterios de Aceptación
+1. Proporciona una interfaz web rápida para seleccionar un equipo del inventario y registrar una entrada de uso.
+2. Registra automáticamente al usuario autenticado, fecha y hora de uso, duración estimada y breve descripción del experimento o uso ("cómo se usó").
+3. Bloquea el registro de uso si el equipo está marcado con estado "Fuera de Servicio" o "En Mantenimiento", emitiendo una advertencia en pantalla.
+4. Muestra el historial cronológico de usos en la ficha detallada del equipo en modo solo lectura.
 
-## Acceptance Criteria
-1. El sistema debe proporcionar un acceso rápido en la pantalla principal para registrar el uso de un equipo.
-2. Los campos obligatorios son: nombre del usuario, equipo seleccionado, fecha y hora de inicio, horas/minutos de uso y observaciones de uso (experimento o muestra procesada).
-3. La bitácora de uso de equipos debe mostrar los registros de forma cronológica inversa.
-4. Si un equipo está marcado con estado "Fuera de Servicio" o "En Mantenimiento", el sistema debe bloquear la posibilidad de registrar su uso, mostrando un mensaje explicativo.
+### Pantallas Relacionadas (Wireframes)
+* *(Nota: Pantallas de formulario de registro diario de uso de equipos e historial cronológico pendientes de diseño en Figma)*
+
+> [!NOTE]
+> Esta historia está clasificada como de **Baja Prioridad / Fuera de MVP (Fase 2)** para optimizar el presupuesto de 100 horas.

@@ -1,14 +1,17 @@
-# HU01 - Configuración de Laboratorio Local
+# [HU01] Autenticación y Contexto de Laboratorio
 
-## Summary
-Inicializar la aplicación seleccionando el laboratorio físico (LEPA o LEM) para la operación independiente en la red local de cada máquina.
+### Descripción
+Como personal o administrador del laboratorio, quiero autenticarme mediante credenciales seguras y seleccionar o tener asignado mi laboratorio activo (LEPA o LEM), para operar el sistema a través de la web con el contexto de datos adecuado.
 
-## Description
-As a Técnico de Laboratorio / Administrador, I want to seleccionar el laboratorio al que pertenece la máquina durante el primer inicio, so that la aplicación filtre automáticamente el inventario y equipos correspondientes a esa ubicación y funcione de forma offline.
+### Criterios de Aceptación
+1. El sistema proporciona una pantalla de autenticación segura (login con email y contraseña) gestionada por Supabase Auth.
+2. Una vez autenticado, el usuario opera bajo el contexto de su laboratorio asignado (LEPA o LEM), o permite a usuarios administradores alternar fácilmente el laboratorio activo desde el encabezado.
+3. La interfaz filtra y presenta los datos de inventario y bitácora correspondientes al laboratorio activo seleccionado.
+4. Muestra de forma visible y destacada en el encabezado de la aplicación el laboratorio activo y el correo/rol del usuario autenticado.
+5. Permite cerrar sesión de forma segura y protege las rutas privadas ante accesos no autenticados.
 
-## Acceptance Criteria
-1. Al iniciar la aplicación por primera vez en una máquina, debe mostrarse una pantalla de configuración inicial para seleccionar el laboratorio (LEPA o LEM).
-2. La selección del laboratorio debe persistir localmente en la máquina (localStorage, SQLite o archivo de configuración).
-3. Toda la interfaz del sistema (inventarios, bitácoras) debe estar pre-filtrada por defecto para el laboratorio seleccionado en el primer inicio.
-4. Debe existir un panel de configuración protegido por contraseña de administrador para poder reconfigurar el laboratorio de la máquina en caso de ser necesario.
-5. El sistema no debe requerir conexión a internet para esta configuración ni para el funcionamiento general local.
+### Pantallas Relacionadas (Wireframes)
+* `prototype/wireframes_mobile_png/INICIAR_SESION.png`
+* `prototype/wireframes_mobile_png/INICIO_PASO_1.png`
+* `prototype/wireframes_mobile_png/INICIO_PASO_2.png`
+* `prototype/wireframes_mobile_png/INICIO_PASO_3.png`
