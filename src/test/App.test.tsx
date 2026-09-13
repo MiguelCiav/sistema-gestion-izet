@@ -23,7 +23,7 @@ describe('App Component', () => {
     fireEvent.click(registerBtn)
 
     expect(
-      screen.getByText(/escoge el laboratorio en el que será usada esta instancia/i)
+      screen.getByText(/selecciona el laboratorio al que perteneces para continuar con tu registro/i)
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'LEPA' })).toBeInTheDocument()
   })

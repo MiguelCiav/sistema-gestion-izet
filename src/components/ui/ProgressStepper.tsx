@@ -22,15 +22,16 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
 }) => {
   return (
     <div className={cn('w-full select-none py-2', className)}>
-      <div className="relative flex items-center justify-between">
-        {/* Continuous progress track behind circles */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-surface-container-highest z-0" />
-        <div
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary transition-all duration-300 z-0"
-          style={{
-            width: `${steps.length > 1 ? (Math.min(currentStep, steps.length - 1) / (steps.length - 1)) * 100 : 0}%`,
-          }}
-        />
+      <div className="relative flex items-start justify-between">
+        {/* Continuous progress track centered on the circles */}
+        <div className="absolute left-4 right-4 sm:left-[18px] sm:right-[18px] top-4 sm:top-[18px] -translate-y-1/2 h-1 bg-surface-container-highest z-0">
+          <div
+            className="h-full bg-primary transition-all duration-300"
+            style={{
+              width: `${steps.length > 1 ? (Math.min(currentStep, steps.length - 1) / (steps.length - 1)) * 100 : 0}%`,
+            }}
+          />
+        </div>
 
         {/* Step Nodes */}
         {steps.map((step, idx) => {
