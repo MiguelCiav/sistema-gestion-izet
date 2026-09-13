@@ -9,11 +9,19 @@ import { Button } from '../../../components/ui/Button'
 import { useAuth } from '../../auth'
 import { useLab } from '../../laboratorios'
 
-export const DashboardView: React.FC = () => {
+export interface DashboardViewProps {
+  currentTab?: NavTabId
+  onNavigate?: (tab: NavTabId) => void
+}
+
+export const DashboardView: React.FC<DashboardViewProps> = ({
+  currentTab = 'dashboard',
+  onNavigate,
+}) => {
   const { user, profile, isGuest, signOut } = useAuth()
   const { activeLab, switchLab, activeLabNombre } = useLab()
 
-  const [activeTab, setActiveTab] = useState<NavTabId>('dashboard')
+  const [activeTab, setActiveTab] = useState<NavTabId>(currentTab)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -107,8 +115,11 @@ export const DashboardView: React.FC = () => {
 
       {/* Persistent Bottom Navigation */}
       <BottomNavigation
-        activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab)}
+        activeTab={currentTab || activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab)
+          onNavigate?.(tab)
+        }}
       />
 
       {/* Settings / User Profile Modal */}
