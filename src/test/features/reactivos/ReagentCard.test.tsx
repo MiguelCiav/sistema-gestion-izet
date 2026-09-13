@@ -40,14 +40,42 @@ describe('ReagentCard Component', () => {
     render(<ReagentCard reagent={mockReagent} />)
     expect(screen.getByText('Ácido Clorhídrico 37%')).toBeInTheDocument()
     expect(screen.getByText('RCT-HCL-01')).toBeInTheDocument()
-    expect(screen.getByText('1500ml')).toBeInTheDocument()
+    expect(screen.getByText(/1500\s*ml/i)).toBeInTheDocument()
     expect(screen.getByText('HCl')).toBeInTheDocument()
+    expect(screen.getByText(/gabinete de ácidos 1/i)).toBeInTheDocument()
   })
 
   it('renders status badges for regulated and common use', () => {
     render(<ReagentCard reagent={mockReagent} />)
     expect(screen.getByText(/regulado/i)).toBeInTheDocument()
     expect(screen.getByText(/uso común/i)).toBeInTheDocument()
+    expect(screen.getByText(/disponible/i)).toBeInTheDocument()
+  })
+
+  it('renders Escasez badge when stock is below or equal to threshold (HU07)', () => {
+    const lowStockReagent: ReagentItem = {
+      ...mockReagent,
+      stock: {
+        ...mockReagent.stock!,
+        cantidad_actual: 400,
+        umbral_minimo: 500,
+      },
+    }
+    render(<ReagentCard reagent={lowStockReagent} />)
+    expect(screen.getByText('Escasea')).toBeInTheDocument()
+  })
+
+  it('renders Sin existencias badge when stock is zero (HU07)', () => {
+    const zeroStockReagent: ReagentItem = {
+      ...mockReagent,
+      stock: {
+        ...mockReagent.stock!,
+        cantidad_actual: 0,
+        umbral_minimo: 500,
+      },
+    }
+    render(<ReagentCard reagent={zeroStockReagent} />)
+    expect(screen.getByText('Sin existencias')).toBeInTheDocument()
   })
 
   it('triggers onClick when clicked or pressed Enter', () => {

@@ -6,6 +6,30 @@ export type CatalogoReactivoInsert = Database['public']['Tables']['catalogo_reac
 export type CatalogoReactivoUpdate = Database['public']['Tables']['catalogo_reactivos']['Update']
 export type StockReactivo = Database['public']['Tables']['stock_reactivos']['Row']
 
+export type StockStatusType = 'DISPONIBLE' | 'ESCASEZ' | 'SIN_EXISTENCIA'
+
+export interface StockAlert {
+  reactivoId: string
+  codigoUnico: string
+  nombre: string
+  tipo: 'ESCASEZ' | 'SIN_EXISTENCIA'
+  mensaje: string
+  cantidadActual: number
+  umbralMinimo: number
+  unidadMedida: string
+}
+
+export function getReagentStockStatus(reagent: ReagentItem): StockStatusType {
+  const stock = reagent.stock
+  if (!stock || stock.cantidad_actual <= 0) {
+    return 'SIN_EXISTENCIA'
+  }
+  if (stock.cantidad_actual <= stock.umbral_minimo) {
+    return 'ESCASEZ'
+  }
+  return 'DISPONIBLE'
+}
+
 export interface ReagentItem extends CatalogoReactivo {
   stock?: {
     id: string
@@ -16,6 +40,9 @@ export interface ReagentItem extends CatalogoReactivo {
     umbral_minimo: number
     fecha_vencimiento: string | null
     lote: string | null
+    ultimo_precio_adquirido?: number | null
+    moneda_precio?: 'USD' | 'VES'
+    es_uso_comun?: boolean
     estado_fisico: 'DISPONIBLE' | 'EN_PRESTAMO' | 'AGOTADO'
   } | null
 }
@@ -23,9 +50,25 @@ export interface ReagentItem extends CatalogoReactivo {
 export interface ReagentFilters {
   soloRegulados?: boolean
   soloUsoComun?: boolean
+  soloEscasez?: boolean
+  soloSinExistencia?: boolean
   maxNfpaSalud?: number
   minNfpaSalud?: number
   incluirInactivos?: boolean
+}
+
+export interface UpsertStockInput {
+  id?: string
+  reactivo_id: string
+  laboratorio_id: string
+  cantidad_actual: number
+  unidad_medida: string
+  ubicacion_fisica: string
+  umbral_minimo: number
+  fecha_vencimiento?: string | null
+  lote?: string | null
+  ultimo_precio_adquirido?: number | null
+  moneda_precio?: 'USD' | 'VES'
 }
 
 export interface CreateReagentInput extends CatalogoReactivoInsert {
@@ -198,11 +241,15 @@ export const reagentsService = {
           if (!filters?.incluirInactivos && !r.activo) return false
           if (filters?.soloRegulados && !r.es_regulado) return false
           if (filters?.soloUsoComun && !r.es_uso_comun) return false
+          if (filters?.soloEscasez && getReagentStockStatus(r) !== 'ESCASEZ') return false
+          if (filters?.soloSinExistencia && getReagentStockStatus(r) !== 'SIN_EXISTENCIA') return false
           return true
         })
       }
 
       // Si tenemos labId, consultar stock_reactivos para enriquecer los reactivos
+      let resultReagents: ReagentItem[] = reagents.map((r) => ({ ...r, stock: null }))
+
       if (labId) {
         const { data: stockItems } = await supabase
           .from('stock_reactivos')
@@ -214,7 +261,7 @@ export const reagentsService = {
           stockItems.forEach((st) => stockMap.set(st.reactivo_id, st))
         }
 
-        return reagents.map((r) => {
+        resultReagents = reagents.map((r) => {
           const st = stockMap.get(r.id)
           return {
             ...r,
@@ -228,6 +275,11 @@ export const reagentsService = {
                   umbral_minimo: Number(st.umbral_minimo),
                   fecha_vencimiento: st.fecha_vencimiento,
                   lote: st.lote,
+                  ultimo_precio_adquirido: st.ultimo_precio_adquirido
+                    ? Number(st.ultimo_precio_adquirido)
+                    : null,
+                  moneda_precio: st.moneda_precio,
+                  es_uso_comun: st.es_uso_comun,
                   estado_fisico: st.estado_fisico,
                 }
               : null,
@@ -235,9 +287,178 @@ export const reagentsService = {
         })
       }
 
-      return reagents.map((r) => ({ ...r, stock: null }))
+      // Filtros de stock (HU07)
+      if (filters?.soloEscasez) {
+        resultReagents = resultReagents.filter((r) => getReagentStockStatus(r) === 'ESCASEZ')
+      }
+      if (filters?.soloSinExistencia) {
+        resultReagents = resultReagents.filter(
+          (r) => getReagentStockStatus(r) === 'SIN_EXISTENCIA'
+        )
+      }
+
+      return resultReagents
     } catch {
-      return FALLBACK_REAGENTS
+      return FALLBACK_REAGENTS.filter((r) => {
+        if (!filters?.incluirInactivos && !r.activo) return false
+        if (filters?.soloRegulados && !r.es_regulado) return false
+        if (filters?.soloUsoComun && !r.es_uso_comun) return false
+        if (filters?.soloEscasez && getReagentStockStatus(r) !== 'ESCASEZ') return false
+        if (filters?.soloSinExistencia && getReagentStockStatus(r) !== 'SIN_EXISTENCIA') return false
+        return true
+      })
+    }
+  },
+
+  /**
+   * HU04: Registra o actualiza la existencia física de un reactivo en un laboratorio
+   */
+  async upsertStock(
+    input: UpsertStockInput
+  ): Promise<{ data: StockReactivo | null; error: Error | null }> {
+    try {
+      const estado_fisico: 'DISPONIBLE' | 'AGOTADO' =
+        input.cantidad_actual > 0 ? 'DISPONIBLE' : 'AGOTADO'
+      const payload: Database['public']['Tables']['stock_reactivos']['Insert'] = {
+        reactivo_id: input.reactivo_id,
+        laboratorio_id: input.laboratorio_id,
+        cantidad_actual: input.cantidad_actual,
+        unidad_medida: input.unidad_medida,
+        ubicacion_fisica: input.ubicacion_fisica,
+        umbral_minimo: input.umbral_minimo,
+        fecha_vencimiento: input.fecha_vencimiento || null,
+        lote: input.lote || null,
+        ultimo_precio_adquirido: input.ultimo_precio_adquirido ?? null,
+        moneda_precio: input.moneda_precio || 'USD',
+        estado_fisico,
+        updated_at: new Date().toISOString(),
+      }
+
+      const { data, error } = await supabase
+        .from('stock_reactivos')
+        .upsert(payload, { onConflict: 'reactivo_id,laboratorio_id' })
+        .select()
+        .single()
+
+      if (error) {
+        // Fallback en memoria si opera desconectado
+        const target = FALLBACK_REAGENTS.find((r) => r.id === input.reactivo_id)
+        if (target) {
+          const fallbackStock: StockReactivo = {
+            id: `stock-${input.reactivo_id}-${Date.now()}`,
+            reactivo_id: input.reactivo_id,
+            laboratorio_id: input.laboratorio_id,
+            cantidad_actual: input.cantidad_actual,
+            unidad_medida: input.unidad_medida,
+            ubicacion_fisica: input.ubicacion_fisica,
+            umbral_minimo: input.umbral_minimo,
+            fecha_vencimiento: input.fecha_vencimiento || null,
+            lote: input.lote || null,
+            ultimo_precio_adquirido: input.ultimo_precio_adquirido ?? null,
+            moneda_precio: input.moneda_precio || 'USD',
+            es_uso_comun: target.es_uso_comun,
+            estado_fisico,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+          target.stock = fallbackStock
+          return { data: fallbackStock, error: null }
+        }
+        return { data: null, error: new Error(error.message) }
+      }
+
+      return { data, error: null }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al registrar stock'
+      return { data: null, error: new Error(msg) }
+    }
+  },
+
+  /**
+   * HU07: Obtiene alertas de reactivos para el laboratorio activo
+   * - 0 < stock <= umbral -> ESCASEZ (Alerta amarilla/persistente)
+   * - stock = 0 o sin existencia -> SIN_EXISTENCIA (Alerta roja)
+   */
+  async getStockAlerts(labId?: string | null): Promise<StockAlert[]> {
+    try {
+      const reagents = await this.getReagents(labId)
+      const alerts: StockAlert[] = []
+
+      for (const r of reagents) {
+        const status = getReagentStockStatus(r)
+        if (status === 'ESCASEZ' && r.stock) {
+          alerts.push({
+            reactivoId: r.id,
+            codigoUnico: r.codigo_unico,
+            nombre: r.nombre,
+            tipo: 'ESCASEZ',
+            mensaje: `${r.codigo_unico} escasea`,
+            cantidadActual: r.stock.cantidad_actual,
+            umbralMinimo: r.stock.umbral_minimo,
+            unidadMedida: r.stock.unidad_medida,
+          })
+        } else if (status === 'SIN_EXISTENCIA') {
+          alerts.push({
+            reactivoId: r.id,
+            codigoUnico: r.codigo_unico,
+            nombre: r.nombre,
+            tipo: 'SIN_EXISTENCIA',
+            mensaje: `${r.codigo_unico} sin existencia`,
+            cantidadActual: 0,
+            umbralMinimo: r.stock?.umbral_minimo ?? 0,
+            unidadMedida: r.stock?.unidad_medida ?? 'ml',
+          })
+        }
+      }
+
+      return alerts
+    } catch {
+      return []
+    }
+  },
+
+  /**
+   * Obtiene la existencia física de un reactivo específico en un laboratorio
+   */
+  async getStockByReagentAndLab(
+    reactivoId: string,
+    labId: string
+  ): Promise<StockReactivo | null> {
+    try {
+      const { data, error } = await supabase
+        .from('stock_reactivos')
+        .select('*')
+        .eq('reactivo_id', reactivoId)
+        .eq('laboratorio_id', labId)
+        .maybeSingle()
+
+      if (error || !data) {
+        const fallbackTarget = FALLBACK_REAGENTS.find((r) => r.id === reactivoId)
+        if (fallbackTarget?.stock && fallbackTarget.stock.laboratorio_id === labId) {
+          return {
+            id: fallbackTarget.stock.id,
+            reactivo_id: reactivoId,
+            laboratorio_id: labId,
+            cantidad_actual: fallbackTarget.stock.cantidad_actual,
+            unidad_medida: fallbackTarget.stock.unidad_medida,
+            ubicacion_fisica: fallbackTarget.stock.ubicacion_fisica,
+            umbral_minimo: fallbackTarget.stock.umbral_minimo,
+            fecha_vencimiento: fallbackTarget.stock.fecha_vencimiento,
+            lote: fallbackTarget.stock.lote,
+            ultimo_precio_adquirido: fallbackTarget.stock.ultimo_precio_adquirido ?? null,
+            moneda_precio: fallbackTarget.stock.moneda_precio ?? 'USD',
+            es_uso_comun: fallbackTarget.stock.es_uso_comun ?? false,
+            estado_fisico: fallbackTarget.stock.estado_fisico,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        }
+        return null
+      }
+
+      return data
+    } catch {
+      return null
     }
   },
 
