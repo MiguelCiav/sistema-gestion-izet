@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
-import type { Database } from '../types/database.types'
+import { supabase } from '../../../lib/supabase'
+import type { Database } from '../../../types/database.types'
 
 export type Perfil = Database['public']['Tables']['perfiles']['Row']
 
@@ -205,4 +205,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 }
 
 export { AuthContext }
-

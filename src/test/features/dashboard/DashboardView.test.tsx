@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { DashboardView } from '../../views/DashboardView'
-import { AuthProvider, LabProvider } from '../../context'
+import { DashboardView } from '../../../features/dashboard'
+import { AuthProvider } from '../../../features/auth'
+import { LabProvider } from '../../../features/laboratorios'
 
 describe('DashboardView Component', () => {
   const renderDashboard = () => {

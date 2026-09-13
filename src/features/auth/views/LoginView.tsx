@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { LogoContainer } from '../components/ui/LogoContainer'
-import { Input } from '../components/ui/Input'
-import { Button } from '../components/ui/Button'
-import { useAuth } from '../context'
+import { LogoContainer } from '../../../components/ui/LogoContainer'
+import { Input } from '../../../components/ui/Input'
+import { Button } from '../../../components/ui/Button'
+import { useAuth } from '../hooks/useAuth'
 
 export interface LoginViewProps {
   onGoToOnboarding: () => void
