@@ -91,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    setIsLoading(true)
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -105,8 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error inesperado al iniciar sesión'
       return { error: new Error(message) }
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -117,12 +114,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     rol = 'analista',
     laboratorioCodigo = 'LEPA',
   }: SignUpParams) => {
-    setIsLoading(true)
     try {
+      const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}` : undefined
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             nombre_completo: nombreCompleto,
             rol,
@@ -137,8 +135,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al registrar usuario'
       return { error: new Error(message) }
-    } finally {
-      setIsLoading(false)
     }
   }
 

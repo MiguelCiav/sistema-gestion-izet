@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Mail } from 'lucide-react'
 import { LogoContainer } from '../../../components/ui/LogoContainer'
 import { ProgressStepper } from '../../../components/ui/ProgressStepper'
 import { Input } from '../../../components/ui/Input'
@@ -30,6 +31,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [registeredEmail, setRegisteredEmail] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -39,7 +41,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
     setCurrentStep(1)
   }
 
-  const handleRegisterAdmin = async (e: React.FormEvent) => {
+  const handleRegisterUser = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage(null)
 
@@ -59,11 +61,12 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
     }
 
     setIsLoading(true)
+    const targetEmail = email.trim()
     const { error } = await signUp({
-      email: email.trim(),
+      email: targetEmail,
       password,
       nombreCompleto: nombre.trim(),
-      rol: 'admin',
+      rol: 'analista', // Registro como usuario estándar; administradores asignados en base de datos
       laboratorioCodigo: selectedLab,
     })
     setIsLoading(false)
@@ -71,6 +74,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
     if (error) {
       setErrorMessage(error.message)
     } else {
+      setRegisteredEmail(targetEmail)
       setCurrentStep(2)
     }
   }
@@ -95,8 +99,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
               ¡Bienvenido!
             </h1>
             <p className="font-sans text-sm sm:text-base text-on-surface-variant mb-8 leading-relaxed">
-              Antes de comenzar, escoge el laboratorio en el que será usada esta instancia del
-              sistema:
+              Selecciona el laboratorio al que perteneces para continuar con tu registro:
             </p>
 
             <div className="space-y-4">
@@ -123,16 +126,14 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
           </div>
         )}
 
-        {/* STEP 2: Datos del Administrador */}
+        {/* STEP 2: Datos del Usuario */}
         {currentStep === 1 && (
           <div className="w-full animate-in fade-in duration-200">
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-primary mb-3 tracking-tight">
-              ¿Cómo debemos recordarte?
+              Crear Cuenta de Usuario
             </h1>
             <p className="font-sans text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
-              Ingresa tus datos de inicio de sesión como administrador, este usuario tendrá
-              permisos especiales, por lo que es importante que anotes sus credenciales en un
-              lugar seguro.
+              Ingresa tus datos personales y credenciales de acceso para registrarte en el sistema.
             </p>
 
             {errorMessage && (
@@ -144,9 +145,9 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
               </div>
             )}
 
-            <form onSubmit={handleRegisterAdmin} className="w-full space-y-3.5 text-left" noValidate>
+            <form onSubmit={handleRegisterUser} className="w-full space-y-3.5 text-left" noValidate>
               <Input
-                placeholder="Usuario (Nombre completo)"
+                placeholder="Nombre completo"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 disabled={isLoading}
@@ -164,7 +165,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
 
               <Input
                 type="password"
-                placeholder="Clave"
+                placeholder="Contraseña"
                 showPasswordToggle
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -174,7 +175,7 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
 
               <Input
                 type="password"
-                placeholder="Confirma tu clave"
+                placeholder="Confirma tu contraseña"
                 showPasswordToggle
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -206,16 +207,33 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
           </div>
         )}
 
-        {/* STEP 3: Confirmación y Éxito */}
+        {/* STEP 3: Confirmación y Verificación de Correo */}
         {currentStep === 2 && (
-          <div className="w-full animate-in fade-in duration-200">
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-primary mb-4 tracking-tight">
-              ¡Todo listo!
+          <div className="w-full animate-in fade-in duration-200 flex flex-col items-center">
+            <div className="mb-4 h-16 w-16 rounded-2xl bg-primary-container/20 flex items-center justify-center text-primary shadow-sm border border-primary/20">
+              <Mail className="h-8 w-8 stroke-[2.5]" />
+            </div>
+
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-primary mb-3 tracking-tight">
+              ¡Registro Exitoso!
             </h1>
-            <p className="font-sans text-sm sm:text-base text-on-surface-variant mb-8 leading-relaxed">
-              Ya el sistema para el laboratorio <strong className="text-primary">{selectedLab}</strong> está
-              configurado, puedes iniciar sesión:
+
+            <p className="font-sans text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
+              Hemos registrado tu cuenta para el laboratorio{' '}
+              <strong className="text-primary font-bold">{selectedLab}</strong>.
             </p>
+
+            <div className="w-full mb-6 p-4 rounded-xl bg-surface-container text-left border border-outline-variant/30 space-y-2">
+              <p className="text-xs sm:text-sm font-sans text-on-surface leading-relaxed">
+                Te hemos enviado un enlace de confirmación a:
+              </p>
+              <p className="text-xs sm:text-sm font-sans font-bold text-primary break-all">
+                {registeredEmail || email}
+              </p>
+              <p className="text-xs font-sans text-on-surface-variant pt-1 leading-relaxed">
+                Por favor, abre el enlace en tu correo para activar tu cuenta antes de iniciar sesión.
+              </p>
+            </div>
 
             <Button
               type="button"
@@ -224,8 +242,12 @@ export const OnboardingSetupView: React.FC<OnboardingSetupViewProps> = ({
               size="lg"
               onClick={onFinishOnboarding}
             >
-              Iniciar Sesión
+              Ir a Iniciar Sesión
             </Button>
+
+            <p className="mt-4 text-xs font-sans text-on-surface-variant/80">
+              ¿No recibiste el correo? Revisa tu carpeta de spam o correo no deseado.
+            </p>
           </div>
         )}
       </div>
