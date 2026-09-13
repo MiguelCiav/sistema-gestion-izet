@@ -15,7 +15,7 @@ describe('StatusBadge Component', () => {
 
   it('renders default label for alerta', () => {
     render(<StatusBadge variant="alerta" />)
-    expect(screen.getByText('Stock Bajo')).toBeInTheDocument()
+    expect(screen.getByText('En Escasez')).toBeInTheDocument()
   })
 
   it('renders custom label and custom icon when provided', () => {

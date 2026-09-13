@@ -206,13 +206,12 @@ describe('InventoryView Component', () => {
     expect(screen.getByRole('button', { name: /filtro solo regulados/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filtro solo uso común/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filtro solo escasez/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /filtro solo sin existencias/i })).toBeInTheDocument()
   })
 
   it('renders active stock alerts banner when reagents are in scarcity', async () => {
     renderView()
-    expect(await screen.findByText(/alerta.*de reactivos en LEPA/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /filtrar escasez/i })).toBeInTheDocument()
+    expect(await screen.findByText(/1 reactivo en escasez en LEPA/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ver en escasez/i })).toBeInTheDocument()
   })
 
   it('opens detail modal when clicking a reagent card', async () => {

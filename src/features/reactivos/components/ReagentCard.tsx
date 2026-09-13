@@ -16,18 +16,15 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
   className,
 }) => {
   const stockStatus = getReagentStockStatus(reagent)
-  const isLowStock = stockStatus === 'ESCASEZ'
-  const isNoStock = stockStatus === 'SIN_EXISTENCIA'
+  const isScarcity = stockStatus === 'ESCASEZ'
 
   const stockText = reagent.stock
     ? `${reagent.stock.cantidad_actual} ${reagent.stock.unidad_medida}`
-    : '0 / Sin existencias'
+    : '0 / En escasez'
 
   const borderClass = !reagent.activo
     ? 'border-l-outline'
-    : isNoStock
-    ? 'border-l-error'
-    : isLowStock
+    : isScarcity
     ? 'border-l-amber-500'
     : 'border-l-primary'
 
@@ -66,11 +63,9 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
           Cod: <span className="font-bold text-on-surface">{reagent.codigo_unico}</span> / Stock:{' '}
           <span
             className={cn(
-              'font-semibold',
-              isNoStock
-                ? 'text-error'
-                : isLowStock
-                ? 'text-amber-700'
+              'font-bold',
+              isScarcity
+                ? 'text-[#705c30]'
                 : 'text-primary'
             )}
           >
@@ -92,13 +87,10 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
           {reagent.es_uso_comun && (
             <StatusBadge variant="comun" size="sm" />
           )}
-          {isNoStock && (
-            <StatusBadge variant="critico" label="Sin existencias" size="sm" />
+          {isScarcity && (
+            <StatusBadge variant="alerta" label="En Escasez" size="sm" />
           )}
-          {isLowStock && (
-            <StatusBadge variant="alerta" label="Escasea" size="sm" />
-          )}
-          {!isNoStock && !isLowStock && reagent.stock && (
+          {!isScarcity && reagent.stock && (
             <StatusBadge variant="disponible" label="Disponible" size="sm" />
           )}
           {!reagent.activo && (

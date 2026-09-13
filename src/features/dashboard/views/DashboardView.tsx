@@ -98,28 +98,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
             ) : stockAlerts.length > 0 ? (
               stockAlerts.map((alert) => {
-                const isEscasez = alert.tipo === 'ESCASEZ'
                 return (
                   <Card
                     key={`${alert.tipo}-${alert.reactivoId}`}
-                    variant={isEscasez ? 'alert-warning' : 'alert-danger'}
+                    variant="alert-warning"
                     className="p-4 flex items-center justify-between cursor-pointer select-none transition-transform hover:-translate-y-0.5 active:translate-y-0"
                     onClick={() => onNavigate?.('inventario')}
                   >
                     <div className="flex-1 min-w-0 pr-3">
-                      <span className="font-sans font-bold text-sm sm:text-base text-on-surface block truncate">
+                      <span className="font-sans font-bold text-sm sm:text-base text-[#251a00] block truncate">
                         {alert.mensaje}
                       </span>
-                      <span className="text-xs font-sans text-on-surface-variant block mt-0.5 truncate">
+                      <span className="text-xs font-sans text-[#56441b] block mt-0.5 truncate font-medium">
                         {alert.nombre} — {alert.cantidadActual} {alert.unidadMedida} disponibles
-                        {isEscasez && ` (umbral: ${alert.umbralMinimo} ${alert.unidadMedida})`}
+                        {alert.umbralMinimo > 0 && ` (umbral: ${alert.umbralMinimo} ${alert.unidadMedida})`}
                       </span>
                     </div>
-                    {isEscasez ? (
-                      <AlertTriangle className="h-5 w-5 text-[#705c30] shrink-0 stroke-[2.2]" />
-                    ) : (
-                      <AlertCircle className="h-5 w-5 text-error shrink-0 stroke-[2.2]" />
-                    )}
+                    <AlertTriangle className="h-5 w-5 text-[#705c30] shrink-0 stroke-[2.2]" />
                   </Card>
                 )
               })

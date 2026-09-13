@@ -21,10 +21,7 @@ export interface StockAlert {
 
 export function getReagentStockStatus(reagent: ReagentItem): StockStatusType {
   const stock = reagent.stock
-  if (!stock || stock.cantidad_actual <= 0) {
-    return 'SIN_EXISTENCIA'
-  }
-  if (stock.cantidad_actual <= stock.umbral_minimo) {
+  if (!stock || stock.cantidad_actual <= stock.umbral_minimo) {
     return 'ESCASEZ'
   }
   return 'DISPONIBLE'
@@ -386,25 +383,14 @@ export const reagentsService = {
 
       for (const r of reagents) {
         const status = getReagentStockStatus(r)
-        if (status === 'ESCASEZ' && r.stock) {
+        if (status === 'ESCASEZ') {
           alerts.push({
             reactivoId: r.id,
             codigoUnico: r.codigo_unico,
             nombre: r.nombre,
             tipo: 'ESCASEZ',
-            mensaje: `${r.codigo_unico} escasea`,
-            cantidadActual: r.stock.cantidad_actual,
-            umbralMinimo: r.stock.umbral_minimo,
-            unidadMedida: r.stock.unidad_medida,
-          })
-        } else if (status === 'SIN_EXISTENCIA') {
-          alerts.push({
-            reactivoId: r.id,
-            codigoUnico: r.codigo_unico,
-            nombre: r.nombre,
-            tipo: 'SIN_EXISTENCIA',
-            mensaje: `${r.codigo_unico} sin existencia`,
-            cantidadActual: 0,
+            mensaje: `${r.codigo_unico} en escasez`,
+            cantidadActual: r.stock?.cantidad_actual ?? 0,
             umbralMinimo: r.stock?.umbral_minimo ?? 0,
             unidadMedida: r.stock?.unidad_medida ?? 'ml',
           })

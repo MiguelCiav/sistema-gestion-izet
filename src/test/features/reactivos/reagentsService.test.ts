@@ -149,17 +149,17 @@ describe('reagentsService', () => {
     // Stock > umbral -> DISPONIBLE
     expect(getReagentStockStatus(availableReagent)).toBe('DISPONIBLE')
 
-    // 0 < Stock < umbral -> ESCASEZ (HU07 Criterio 1)
+    // 0 < Stock < umbral -> ESCASEZ
     expect(getReagentStockStatus(lowStockReagent)).toBe('ESCASEZ')
 
-    // Stock == umbral -> ESCASEZ (HU07 Criterio 1)
+    // Stock == umbral -> ESCASEZ
     expect(getReagentStockStatus(exactThresholdReagent)).toBe('ESCASEZ')
 
-    // Stock == 0 -> SIN_EXISTENCIA (HU07 Criterio 2: NO es alerta de stock mínimo)
-    expect(getReagentStockStatus(zeroStockReagent)).toBe('SIN_EXISTENCIA')
+    // Stock == 0 -> ESCASEZ (unificado)
+    expect(getReagentStockStatus(zeroStockReagent)).toBe('ESCASEZ')
 
-    // Sin stock -> SIN_EXISTENCIA
-    expect(getReagentStockStatus(noStockReagent)).toBe('SIN_EXISTENCIA')
+    // Sin stock -> ESCASEZ
+    expect(getReagentStockStatus(noStockReagent)).toBe('ESCASEZ')
   })
 
   it('fetches stock alerts for laboratory (HU07 Criterio 3 y 4)', async () => {
@@ -170,8 +170,9 @@ describe('reagentsService', () => {
     // Check alert structure
     for (const alert of alerts) {
       expect(alert).toHaveProperty('tipo')
-      expect(['ESCASEZ', 'SIN_EXISTENCIA']).toContain(alert.tipo)
+      expect(alert.tipo).toBe('ESCASEZ')
       expect(alert).toHaveProperty('mensaje')
+      expect(alert.mensaje).toContain('en escasez')
       expect(alert).toHaveProperty('codigoUnico')
     }
   })

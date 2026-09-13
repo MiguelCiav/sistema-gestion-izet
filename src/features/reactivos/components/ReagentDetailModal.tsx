@@ -122,10 +122,8 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
               <span className="font-sans font-bold text-sm sm:text-base text-on-surface">
                 {stock ? `${stock.cantidad_actual} ${stock.unidad_medida}` : '0 (Sin existencia)'}
               </span>
-              {stockStatus === 'SIN_EXISTENCIA' ? (
-                <StatusBadge variant="critico" label="Sin existencia" size="sm" />
-              ) : stockStatus === 'ESCASEZ' ? (
-                <StatusBadge variant="alerta" label="Escasea" size="sm" />
+              {stockStatus === 'ESCASEZ' ? (
+                <StatusBadge variant="alerta" label="En Escasez" size="sm" />
               ) : (
                 <StatusBadge variant="disponible" label="Disponible" size="sm" />
               )}
@@ -135,7 +133,7 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
           {/* Umbral Mínimo */}
           <div className="p-3.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-between">
             <span className="text-xs sm:text-sm font-sans font-medium text-on-surface-variant flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600" /> Umbral Mínimo
+              <AlertTriangle className="h-4 w-4 text-[#705c30]" /> Umbral Mínimo
             </span>
             <span className="font-sans font-semibold text-sm sm:text-base text-on-surface">
               {stock ? `${stock.umbral_minimo} ${stock.unidad_medida}` : 'No definido'}
@@ -189,8 +187,8 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
 
         {/* Confirmation alert for deactivation */}
         {showConfirmDeactivate && (
-          <div className="w-full p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-500/30 text-left space-y-3">
-            <p className="text-xs sm:text-sm font-sans text-amber-900 dark:text-amber-200">
+          <div className="w-full p-4 rounded-xl bg-[#fdf4dc] border border-[#dec38e] border-l-4 border-l-[#705c30] text-left space-y-3 shadow-xs">
+            <p className="text-xs sm:text-sm font-sans text-[#251a00] font-medium">
               ¿Estás seguro de que deseas dar de baja este reactivo? Dejará de mostrarse en el inventario activo sin perder su trazabilidad histórica ni stock.
             </p>
             <div className="flex gap-2 justify-end">

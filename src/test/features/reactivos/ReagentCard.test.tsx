@@ -62,10 +62,10 @@ describe('ReagentCard Component', () => {
       },
     }
     render(<ReagentCard reagent={lowStockReagent} />)
-    expect(screen.getByText('Escasea')).toBeInTheDocument()
+    expect(screen.getByText('En Escasez')).toBeInTheDocument()
   })
 
-  it('renders Sin existencias badge when stock is zero (HU07)', () => {
+  it('renders En Escasez badge when stock is zero (HU07)', () => {
     const zeroStockReagent: ReagentItem = {
       ...mockReagent,
       stock: {
@@ -75,7 +75,7 @@ describe('ReagentCard Component', () => {
       },
     }
     render(<ReagentCard reagent={zeroStockReagent} />)
-    expect(screen.getByText('Sin existencias')).toBeInTheDocument()
+    expect(screen.getByText('En Escasez')).toBeInTheDocument()
   })
 
   it('triggers onClick when clicked or pressed Enter', () => {
