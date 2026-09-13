@@ -1,26 +1,45 @@
-import React from 'react'
-import { Button } from './components/ui/Button'
+import React, { useState } from 'react'
+import { AuthProvider, useAuth, LabProvider } from './context'
+import { LoginView } from './views/LoginView'
+import { OnboardingSetupView } from './views/OnboardingSetupView'
+import { DashboardView } from './views/DashboardView'
+import { Loader2 } from 'lucide-react'
+
+export function AppContent(): React.JSX.Element {
+  const { user, isGuest, isLoading } = useAuth()
+  const [view, setView] = useState<'login' | 'onboarding'>('login')
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-surface-warm flex flex-col items-center justify-center p-6 text-primary">
+        <Loader2 className="h-10 w-10 animate-spin mb-3 stroke-[2.5]" />
+        <p className="font-sans text-sm font-semibold text-on-surface-variant">
+          Cargando Sistema LEPA-LEM...
+        </p>
+      </div>
+    )
+  }
+
+  // If user is authenticated or logged in as guest -> Show Dashboard
+  if (user || isGuest) {
+    return <DashboardView />
+  }
+
+  // Unauthenticated routing: Onboarding vs Login
+  if (view === 'onboarding') {
+    return <OnboardingSetupView onFinishOnboarding={() => setView('login')} />
+  }
+
+  return <LoginView onGoToOnboarding={() => setView('onboarding')} />
+}
 
 export function App(): React.JSX.Element {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
-      <header className="max-w-md rounded-2xl bg-surface-container p-8 shadow-sm border border-outline-variant/30">
-        <span className="text-xs font-bold uppercase tracking-wider text-primary">
-          IZT • UCV
-        </span>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface font-display">
-          Sistema LEPA-LEM
-        </h1>
-        <p className="mt-3 text-sm text-on-surface-variant font-sans">
-          Gestión automatizada de inventario de reactivos, control de vidriería, bitácora
-          de equipos y préstamos.
-        </p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button variant="primary">Iniciar Sesión</Button>
-          <Button variant="outline">Ver Catálogo</Button>
-        </div>
-      </header>
-    </div>
+    <AuthProvider>
+      <LabProvider>
+        <AppContent />
+      </LabProvider>
+    </AuthProvider>
   )
 }
 
