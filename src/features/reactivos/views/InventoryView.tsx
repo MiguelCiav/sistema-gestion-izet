@@ -112,24 +112,24 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
         {/* Active stock alerts banner (HU07) */}
         {stockAlerts.length > 0 && (
-          <div className="mb-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-left">
-            <div className="flex items-center gap-2 text-xs font-sans font-semibold text-amber-900 dark:text-amber-200">
-              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+          <div className="mb-4 p-3.5 rounded-2xl bg-[#fdf4dc] border border-[#dec38e] border-l-4 border-l-[#705c30] flex items-center justify-between text-left shadow-xs">
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-sans font-bold text-[#251a00]">
+              <AlertTriangle className="h-4 w-4 text-[#705c30] shrink-0 stroke-[2.2]" />
               <span>
-                {stockAlerts.length} alerta{stockAlerts.length > 1 ? 's' : ''} de reactivos en {activeLab}
+                {stockAlerts.length} {stockAlerts.length === 1 ? 'reactivo en escasez' : 'reactivos en escasez'} en {activeLab}
               </span>
             </div>
             <button
               type="button"
               onClick={() => {
                 setShowFilters(true)
-                if (!filters.soloEscasez && !filters.soloSinExistencia) {
+                if (!filters.soloEscasez) {
                   toggleFilter('soloEscasez')
                 }
               }}
-              className="text-xs font-sans font-bold text-amber-800 dark:text-amber-300 hover:underline shrink-0"
+              className="text-xs font-sans font-bold text-[#56441b] hover:text-[#251a00] underline underline-offset-2 shrink-0 transition-colors"
             >
-              Filtrar escasez
+              Ver en escasez
             </button>
           </div>
         )}
@@ -153,8 +153,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               showFilters ||
               filters.soloRegulados ||
               filters.soloUsoComun ||
-              filters.soloEscasez ||
-              filters.soloSinExistencia
+              filters.soloEscasez
                 ? 'bg-primary text-on-primary border-primary shadow-sm'
                 : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant/50 hover:bg-surface-container'
             }`}
@@ -205,19 +204,6 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
               <StatusBadge
                 variant={filters.soloEscasez ? 'alerta' : 'neutral'}
                 label={filters.soloEscasez ? '✓ En Escasez' : 'En Escasez'}
-                className="cursor-pointer"
-              />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Filtro solo sin existencias"
-              onClick={() => toggleFilter('soloSinExistencia')}
-              className="transition-transform active:scale-95"
-            >
-              <StatusBadge
-                variant={filters.soloSinExistencia ? 'critico' : 'neutral'}
-                label={filters.soloSinExistencia ? '✓ Sin Existencias' : 'Sin Existencias'}
                 className="cursor-pointer"
               />
             </button>

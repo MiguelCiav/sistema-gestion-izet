@@ -17,7 +17,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       'accent-left':
         'bg-surface-container-lowest border border-outline-variant/30 border-l-4 border-l-primary text-on-surface shadow-sm',
       'alert-warning':
-        'bg-[#fdf4dc] border border-[#fbdfa8] border-l-4 border-l-[#705c30] text-[#4d463c] shadow-sm',
+        'bg-[#fdf4dc] border border-[#dec38e] border-l-4 border-l-[#705c30] text-[#251a00] shadow-sm',
       'alert-danger':
         'bg-[#fdeeed] border border-[#ffdad6] border-l-4 border-l-error text-[#410002] shadow-sm',
     }

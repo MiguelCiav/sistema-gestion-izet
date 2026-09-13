@@ -24,7 +24,7 @@ export interface StatusBadgeProps {
 const defaultLabels: Record<StatusBadgeVariant, string> = {
   regulado: 'Regulado',
   critico: 'Sin Existencia',
-  alerta: 'Stock Bajo',
+  alerta: 'En Escasez',
   vencido: 'Vencido',
   proximo_vencer: 'Próximo a Vencer',
   disponible: 'Disponible',
@@ -45,7 +45,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   const variantStyles: Record<StatusBadgeVariant, string> = {
     regulado: 'bg-error-container text-on-error-container border border-error/20',
     critico: 'bg-[#ffdad6] text-[#93000a] border border-[#ba1a1a]/20',
-    alerta: 'bg-[#fbdfa8] text-[#56441b] border border-[#6a572b]/20',
+    alerta: 'bg-[#fbdfa8] text-[#251a00] border border-[#6a572b]/30',
     vencido: 'bg-[#ffdad6] text-[#93000a] border border-[#ba1a1a]/20',
     proximo_vencer: 'bg-[#fef3c7] text-[#92400e] border border-[#d97706]/20',
     disponible: 'bg-primary-fixed text-on-primary-fixed-variant border border-primary/20',
