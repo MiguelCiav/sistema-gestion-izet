@@ -5,6 +5,8 @@ import {
   type ReagentFilters,
   type CreateReagentInput,
   type CatalogoReactivoUpdate,
+  type UpsertStockInput,
+  type StockAlert,
 } from '../services/reagentsService'
 import { useLab } from '../../laboratorios'
 
@@ -12,6 +14,7 @@ export const useReagents = () => {
   const { activeLabId } = useLab()
 
   const [reagents, setReagents] = useState<ReagentItem[]>([])
+  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -20,6 +23,8 @@ export const useReagents = () => {
   const [filters, setFilters] = useState<ReagentFilters>({
     soloRegulados: false,
     soloUsoComun: false,
+    soloEscasez: false,
+    soloSinExistencia: false,
     incluirInactivos: false,
   })
 
@@ -29,12 +34,20 @@ export const useReagents = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingReagent, setEditingReagent] = useState<ReagentItem | null>(null)
 
+  // Stock Modal state (HU04)
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false)
+  const [stockReagent, setStockReagent] = useState<ReagentItem | null>(null)
+
   const loadReagents = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await reagentsService.getReagents(activeLabId, filters)
+      const [data, alerts] = await Promise.all([
+        reagentsService.getReagents(activeLabId, filters),
+        reagentsService.getStockAlerts(activeLabId),
+      ])
       setReagents(data)
+      setStockAlerts(alerts)
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error al cargar catálogo de reactivos'
       setError(msg)
@@ -130,6 +143,51 @@ export const useReagents = () => {
     return { success: true, error: null }
   }
 
+  const handleOpenStockModal = (reagent: ReagentItem) => {
+    setStockReagent(reagent)
+    setIsStockModalOpen(true)
+  }
+
+  const handleCloseStockModal = () => {
+    setIsStockModalOpen(false)
+    setStockReagent(null)
+  }
+
+  const handleUpsertStock = async (input: UpsertStockInput) => {
+    const result = await reagentsService.upsertStock(input)
+    if (result.error) {
+      return { success: false, error: result.error.message }
+    }
+    await loadReagents()
+    if (selectedReagent?.id === input.reactivo_id && result.data) {
+      setSelectedReagent((prev) =>
+        prev
+          ? {
+              ...prev,
+              stock: {
+                id: result.data!.id,
+                laboratorio_id: result.data!.laboratorio_id,
+                cantidad_actual: Number(result.data!.cantidad_actual),
+                unidad_medida: result.data!.unidad_medida,
+                ubicacion_fisica: result.data!.ubicacion_fisica,
+                umbral_minimo: Number(result.data!.umbral_minimo),
+                fecha_vencimiento: result.data!.fecha_vencimiento,
+                lote: result.data!.lote,
+                ultimo_precio_adquirido: result.data!.ultimo_precio_adquirido
+                  ? Number(result.data!.ultimo_precio_adquirido)
+                  : null,
+                moneda_precio: result.data!.moneda_precio,
+                es_uso_comun: result.data!.es_uso_comun,
+                estado_fisico: result.data!.estado_fisico,
+              },
+            }
+          : null
+      )
+    }
+    handleCloseStockModal()
+    return { success: true, error: null }
+  }
+
   const toggleFilter = (key: keyof ReagentFilters) => {
     setFilters((prev) => ({
       ...prev,
@@ -162,6 +220,16 @@ export const useReagents = () => {
     openCreate: handleOpenCreate,
     openEdit: handleOpenEdit,
     closeForm: handleCloseForm,
+
+    // Stock modal (HU04)
+    isStockModalOpen,
+    stockReagent,
+    openStockModal: handleOpenStockModal,
+    closeStockModal: handleCloseStockModal,
+    upsertStock: handleUpsertStock,
+
+    // Stock Alerts (HU07)
+    stockAlerts,
 
     // Mutations
     createReagent: handleCreateReagent,

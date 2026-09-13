@@ -1,7 +1,7 @@
 import React from 'react'
 import { NFPA704Diamond } from '../../../components/ui/NFPA704Diamond'
 import { StatusBadge } from '../../../components/ui/StatusBadge'
-import type { ReagentItem } from '../services/reagentsService'
+import { type ReagentItem, getReagentStockStatus } from '../services/reagentsService'
 import { cn } from '../../../lib/utils'
 
 export interface ReagentCardProps {
@@ -15,14 +15,21 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
   onClick,
   className,
 }) => {
+  const stockStatus = getReagentStockStatus(reagent)
+  const isLowStock = stockStatus === 'ESCASEZ'
+  const isNoStock = stockStatus === 'SIN_EXISTENCIA'
+
   const stockText = reagent.stock
-    ? `${reagent.stock.cantidad_actual}${reagent.stock.unidad_medida}`
+    ? `${reagent.stock.cantidad_actual} ${reagent.stock.unidad_medida}`
     : '0 / Sin existencias'
 
-  const isLowStock =
-    reagent.stock &&
-    reagent.stock.cantidad_actual > 0 &&
-    reagent.stock.cantidad_actual <= reagent.stock.umbral_minimo
+  const borderClass = !reagent.activo
+    ? 'border-l-outline'
+    : isNoStock
+    ? 'border-l-error'
+    : isLowStock
+    ? 'border-l-amber-500'
+    : 'border-l-primary'
 
   return (
     <div
@@ -36,8 +43,9 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
         }
       }}
       className={cn(
-        'group relative w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-container-lowest border-l-4 border-l-primary border border-outline-variant/30 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer select-none text-left',
-        !reagent.activo && 'opacity-60 bg-surface-container/50 border-l-outline',
+        'group relative w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-container-lowest border-l-4 border border-outline-variant/30 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer select-none text-left',
+        borderClass,
+        !reagent.activo && 'opacity-60 bg-surface-container/50',
         className
       )}
     >
@@ -59,12 +67,22 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
           <span
             className={cn(
               'font-semibold',
-              isLowStock ? 'text-amber-700' : 'text-on-surface'
+              isNoStock
+                ? 'text-error'
+                : isLowStock
+                ? 'text-amber-700'
+                : 'text-primary'
             )}
           >
             {stockText}
           </span>
         </p>
+
+        {reagent.stock?.ubicacion_fisica && (
+          <p className="text-[11px] font-sans text-on-surface-variant/70 mt-0.5 truncate">
+            📍 {reagent.stock.ubicacion_fisica}
+          </p>
+        )}
 
         {/* Badges row */}
         <div className="flex items-center gap-1.5 mt-2 flex-wrap">
@@ -74,8 +92,14 @@ export const ReagentCard: React.FC<ReagentCardProps> = ({
           {reagent.es_uso_comun && (
             <StatusBadge variant="comun" size="sm" />
           )}
+          {isNoStock && (
+            <StatusBadge variant="critico" label="Sin existencias" size="sm" />
+          )}
           {isLowStock && (
-            <StatusBadge variant="alerta" size="sm" />
+            <StatusBadge variant="alerta" label="Escasea" size="sm" />
+          )}
+          {!isNoStock && !isLowStock && reagent.stock && (
+            <StatusBadge variant="disponible" label="Disponible" size="sm" />
           )}
           {!reagent.activo && (
             <StatusBadge variant="neutral" label="Inactivo" size="sm" />

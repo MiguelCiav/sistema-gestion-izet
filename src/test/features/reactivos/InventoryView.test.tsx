@@ -68,6 +68,37 @@ const mockReagents: ReagentItem[] = [
       estado_fisico: 'DISPONIBLE',
     },
   },
+  {
+    id: 'seed-act-04',
+    codigo_unico: 'RCT-ACT-04',
+    nombre: 'Acetona Grado Analítico',
+    formula_quimica: 'CH3COCH3',
+    clasificacion_riesgo: 'Inflamable',
+    nfpa_salud: 1,
+    nfpa_inflamabilidad: 3,
+    nfpa_inestabilidad: 0,
+    nfpa_especial: null,
+    es_regulado: true,
+    entidades_regulatorias: ['RESQUIMIC'],
+    es_uso_comun: true,
+    ultimo_precio: 32.0,
+    moneda_precio: 'USD',
+    fecha_ultimo_precio: '2026-08-10',
+    activo: true,
+    created_at: '2026-08-10T10:00:00Z',
+    updated_at: '2026-08-10T10:00:00Z',
+    stock: {
+      id: 'stock-act-04',
+      laboratorio_id: 'lepa-seed-id',
+      cantidad_actual: 500,
+      unidad_medida: 'ml',
+      ubicacion_fisica: 'Gabinete de Inflamables 1',
+      umbral_minimo: 500,
+      fecha_vencimiento: '2027-10-20',
+      lote: 'L-ACT-2026-X',
+      estado_fisico: 'DISPONIBLE',
+    },
+  },
 ]
 
 vi.mock('../../../features/reactivos/services/reagentsService', async (importOriginal) => {
@@ -80,9 +111,36 @@ vi.mock('../../../features/reactivos/services/reagentsService', async (importOri
         return mockReagents.filter((r) => {
           if (filters?.soloRegulados && !r.es_regulado) return false
           if (filters?.soloUsoComun && !r.es_uso_comun) return false
+          if (filters?.soloEscasez) {
+            if (
+              !r.stock ||
+              r.stock.cantidad_actual <= 0 ||
+              r.stock.cantidad_actual > r.stock.umbral_minimo
+            ) {
+              return false
+            }
+          }
+          if (filters?.soloSinExistencia) {
+            if (r.stock && r.stock.cantidad_actual > 0) {
+              return false
+            }
+          }
           return true
         })
       }),
+      getStockAlerts: vi.fn().mockImplementation(async () => [
+        {
+          reactivoId: 'seed-act-04',
+          codigoUnico: 'RCT-ACT-04',
+          nombre: 'Acetona Grado Analítico',
+          tipo: 'ESCASEZ',
+          mensaje: 'RCT-ACT-04 escasea',
+          cantidadActual: 500,
+          umbralMinimo: 500,
+          unidadMedida: 'ml',
+        },
+      ]),
+      upsertStock: vi.fn().mockResolvedValue({ success: true, error: null }),
     },
   }
 })
@@ -140,12 +198,21 @@ describe('InventoryView Component', () => {
 
   it('toggles filter chips when clicking the filter button', async () => {
     renderView()
+    await screen.findByText('Ácido Clorhídrico 37%')
     const filterToggleBtn = screen.getByRole('button', { name: /filtros de búsqueda/i })
     fireEvent.click(filterToggleBtn)
 
     expect(screen.getByText('Filtros:')).toBeInTheDocument()
-    expect(screen.getByText('Regulados')).toBeInTheDocument()
-    expect(screen.getByText('Uso Común')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filtro solo regulados/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filtro solo uso común/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filtro solo escasez/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filtro solo sin existencias/i })).toBeInTheDocument()
+  })
+
+  it('renders active stock alerts banner when reagents are in scarcity', async () => {
+    renderView()
+    expect(await screen.findByText(/alerta.*de reactivos en LEPA/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filtrar escasez/i })).toBeInTheDocument()
   })
 
   it('opens detail modal when clicking a reagent card', async () => {
@@ -156,6 +223,18 @@ describe('InventoryView Component', () => {
     expect(await screen.findByText('Detalle del Reactivo')).toBeInTheDocument()
     expect(screen.getByText('Código Único')).toBeInTheDocument()
     expect(screen.getByText('Stock disponible (LEPA)')).toBeInTheDocument()
+  })
+
+  it('opens stock modal when clicking Gestionar Stock in detail modal', async () => {
+    renderView()
+    const hclCard = await screen.findByText('Ácido Clorhídrico 37%')
+    fireEvent.click(hclCard)
+
+    const manageStockBtn = await screen.findByRole('button', { name: /gestionar stock/i })
+    fireEvent.click(manageStockBtn)
+
+    expect(await screen.findByRole('heading', { name: /gestionar stock/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/cantidad física actual/i)).toBeInTheDocument()
   })
 
   it('opens create modal when clicking the FAB Añadir Reactivo', async () => {

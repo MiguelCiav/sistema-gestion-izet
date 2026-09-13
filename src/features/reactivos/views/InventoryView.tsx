@@ -9,10 +9,21 @@ import { Button } from '../../../components/ui/Button'
 import { ReagentCard } from '../components/ReagentCard'
 import { ReagentDetailModal } from '../components/ReagentDetailModal'
 import { ReagentFormModal } from '../components/ReagentFormModal'
+import { StockModal } from '../components/StockModal'
 import { useReagents } from '../hooks/useReagents'
 import { useLab } from '../../laboratorios'
 import { useAuth } from '../../auth'
-import { SlidersHorizontal, Plus, FlaskConical, AlertCircle, RefreshCw, LogOut, User, Shield } from 'lucide-react'
+import {
+  SlidersHorizontal,
+  Plus,
+  FlaskConical,
+  AlertCircle,
+  AlertTriangle,
+  RefreshCw,
+  LogOut,
+  User,
+  Shield,
+} from 'lucide-react'
 
 export interface InventoryViewProps {
   onNavigate?: (tab: NavTabId) => void
@@ -23,7 +34,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
   onNavigate,
   currentTab = 'inventario',
 }) => {
-  const { activeLab, switchLab, activeLabNombre } = useLab()
+  const { activeLab, activeLabId, switchLab, activeLabNombre } = useLab()
   const { user, profile, signOut, isGuest } = useAuth()
   const [showFilters, setShowFilters] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -56,6 +67,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
     updateReagent,
     deactivateReagent,
     checkCodeAvailability,
+    isStockModalOpen,
+    stockReagent,
+    openStockModal,
+    closeStockModal,
+    upsertStock,
+    stockAlerts,
   } = useReagents()
 
   return (
@@ -93,6 +110,30 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
           </button>
         </div>
 
+        {/* Active stock alerts banner (HU07) */}
+        {stockAlerts.length > 0 && (
+          <div className="mb-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-left">
+            <div className="flex items-center gap-2 text-xs font-sans font-semibold text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+              <span>
+                {stockAlerts.length} alerta{stockAlerts.length > 1 ? 's' : ''} de reactivos en {activeLab}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowFilters(true)
+                if (!filters.soloEscasez && !filters.soloSinExistencia) {
+                  toggleFilter('soloEscasez')
+                }
+              }}
+              className="text-xs font-sans font-bold text-amber-800 dark:text-amber-300 hover:underline shrink-0"
+            >
+              Filtrar escasez
+            </button>
+          </div>
+        )}
+
         {/* Search Bar and Filters Toggle Row */}
         <div className="flex items-center gap-2 mb-4">
           <div className="flex-1">
@@ -109,7 +150,11 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             onClick={() => setShowFilters((prev) => !prev)}
             aria-label="Filtros de búsqueda"
             className={`flex items-center justify-center h-11 w-11 rounded-xl border transition-all duration-150 ${
-              showFilters || filters.soloRegulados || filters.soloUsoComun
+              showFilters ||
+              filters.soloRegulados ||
+              filters.soloUsoComun ||
+              filters.soloEscasez ||
+              filters.soloSinExistencia
                 ? 'bg-primary text-on-primary border-primary shadow-sm'
                 : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant/50 hover:bg-surface-container'
             }`}
@@ -127,6 +172,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
             <button
               type="button"
+              aria-label="Filtro solo regulados"
               onClick={() => toggleFilter('soloRegulados')}
               className="transition-transform active:scale-95"
             >
@@ -139,6 +185,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
             <button
               type="button"
+              aria-label="Filtro solo uso común"
               onClick={() => toggleFilter('soloUsoComun')}
               className="transition-transform active:scale-95"
             >
@@ -151,6 +198,33 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
             <button
               type="button"
+              aria-label="Filtro solo escasez"
+              onClick={() => toggleFilter('soloEscasez')}
+              className="transition-transform active:scale-95"
+            >
+              <StatusBadge
+                variant={filters.soloEscasez ? 'alerta' : 'neutral'}
+                label={filters.soloEscasez ? '✓ En Escasez' : 'En Escasez'}
+                className="cursor-pointer"
+              />
+            </button>
+
+            <button
+              type="button"
+              aria-label="Filtro solo sin existencias"
+              onClick={() => toggleFilter('soloSinExistencia')}
+              className="transition-transform active:scale-95"
+            >
+              <StatusBadge
+                variant={filters.soloSinExistencia ? 'critico' : 'neutral'}
+                label={filters.soloSinExistencia ? '✓ Sin Existencias' : 'Sin Existencias'}
+                className="cursor-pointer"
+              />
+            </button>
+
+            <button
+              type="button"
+              aria-label="Filtro incluir inactivos"
               onClick={() => toggleFilter('incluirInactivos')}
               className="transition-transform active:scale-95"
             >
@@ -254,8 +328,19 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
         onClose={closeDetail}
         reagent={selectedReagent}
         onEdit={(reagent) => openEdit(reagent)}
+        onOpenStockModal={(reagent) => openStockModal(reagent)}
         onDeactivate={deactivateReagent}
         activeLabCodigo={activeLab}
+      />
+
+      {/* Stock Management Modal (HU04) */}
+      <StockModal
+        isOpen={isStockModalOpen}
+        onClose={closeStockModal}
+        reagent={stockReagent}
+        activeLabCodigo={activeLab}
+        activeLabId={activeLabId}
+        onSubmitStock={upsertStock}
       />
 
       {/* Reagent Create / Edit Form Modal */}

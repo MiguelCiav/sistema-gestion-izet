@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { AlertTriangle, AlertCircle, LogOut, User, Shield } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { AlertTriangle, AlertCircle, LogOut, User, Shield, CheckCircle2 } from 'lucide-react'
 import { TopBar } from '../../../components/ui/TopBar'
 import { BottomNavigation, type NavTabId } from '../../../components/ui/BottomNavigation'
 import { Card } from '../../../components/ui/Card'
@@ -8,6 +8,7 @@ import { Modal } from '../../../components/ui/Modal'
 import { Button } from '../../../components/ui/Button'
 import { useAuth } from '../../auth'
 import { useLab } from '../../laboratorios'
+import { reagentsService, type StockAlert } from '../../reactivos'
 
 export interface DashboardViewProps {
   currentTab?: NavTabId
@@ -19,10 +20,38 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigate,
 }) => {
   const { user, profile, isGuest, signOut } = useAuth()
-  const { activeLab, switchLab, activeLabNombre } = useLab()
+  const { activeLab, activeLabId, switchLab, activeLabNombre } = useLab()
 
   const [activeTab, setActiveTab] = useState<NavTabId>(currentTab)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([])
+  const [isLoadingAlerts, setIsLoadingAlerts] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+    const fetchAlerts = async () => {
+      setIsLoadingAlerts(true)
+      try {
+        const alerts = await reagentsService.getStockAlerts(activeLabId)
+        if (isMounted) {
+          setStockAlerts(alerts)
+        }
+      } catch {
+        if (isMounted) {
+          setStockAlerts([])
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingAlerts(false)
+        }
+      }
+    }
+
+    fetchAlerts()
+    return () => {
+      isMounted = false
+    }
+  }, [activeLabId])
 
   const handleSignOut = async () => {
     setIsSettingsOpen(false)
@@ -62,19 +91,46 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="space-y-3">
-            <Card variant="alert-warning" className="p-4 flex items-center justify-between">
-              <span className="font-sans font-bold text-sm sm:text-base text-on-surface">
-                DCA03 escasea
-              </span>
-              <AlertTriangle className="h-5 w-5 text-[#705c30] shrink-0 stroke-[2.2]" />
-            </Card>
-
-            <Card variant="alert-danger" className="p-4 flex items-center justify-between">
-              <span className="font-sans font-bold text-sm sm:text-base text-on-surface">
-                DCA03 sin existencia
-              </span>
-              <AlertCircle className="h-5 w-5 text-error shrink-0 stroke-[2.2]" />
-            </Card>
+            {isLoadingAlerts ? (
+              <div className="space-y-3">
+                <div className="h-16 rounded-2xl bg-surface-container animate-pulse border border-outline-variant/20" />
+                <div className="h-16 rounded-2xl bg-surface-container animate-pulse border border-outline-variant/20" />
+              </div>
+            ) : stockAlerts.length > 0 ? (
+              stockAlerts.map((alert) => {
+                const isEscasez = alert.tipo === 'ESCASEZ'
+                return (
+                  <Card
+                    key={`${alert.tipo}-${alert.reactivoId}`}
+                    variant={isEscasez ? 'alert-warning' : 'alert-danger'}
+                    className="p-4 flex items-center justify-between cursor-pointer select-none transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                    onClick={() => onNavigate?.('inventario')}
+                  >
+                    <div className="flex-1 min-w-0 pr-3">
+                      <span className="font-sans font-bold text-sm sm:text-base text-on-surface block truncate">
+                        {alert.mensaje}
+                      </span>
+                      <span className="text-xs font-sans text-on-surface-variant block mt-0.5 truncate">
+                        {alert.nombre} — {alert.cantidadActual} {alert.unidadMedida} disponibles
+                        {isEscasez && ` (umbral: ${alert.umbralMinimo} ${alert.unidadMedida})`}
+                      </span>
+                    </div>
+                    {isEscasez ? (
+                      <AlertTriangle className="h-5 w-5 text-[#705c30] shrink-0 stroke-[2.2]" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-error shrink-0 stroke-[2.2]" />
+                    )}
+                  </Card>
+                )
+              })
+            ) : (
+              <Card className="p-4 flex items-center gap-3 bg-surface-container/50 border border-outline-variant/30 text-on-surface-variant text-xs font-sans">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                <span>
+                  No hay alertas de reactivos activas para el laboratorio {activeLab}. Todas las existencias superan sus umbrales.
+                </span>
+              </Card>
+            )}
           </div>
         </section>
 

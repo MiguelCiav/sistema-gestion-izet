@@ -102,6 +102,25 @@ describe('ReagentDetailModal Component', () => {
 
     const confirmBtn = screen.getByRole('button', { name: /confirmar baja/i })
     fireEvent.click(confirmBtn)
-    expect(handleDeactivate).toHaveBeenCalledWith(mockReagent.id)
+    expect(handleDeactivate).toHaveBeenCalledWith('test-detail-01')
+  })
+
+  it('triggers onOpenStockModal when Gestionar Stock is clicked', () => {
+    const handleStock = vi.fn()
+    const handleClose = vi.fn()
+
+    render(
+      <ReagentDetailModal
+        isOpen={true}
+        onClose={handleClose}
+        reagent={mockReagent}
+        onOpenStockModal={handleStock}
+      />
+    )
+
+    const stockBtn = screen.getByRole('button', { name: /gestionar stock/i })
+    fireEvent.click(stockBtn)
+    expect(handleStock).toHaveBeenCalledWith(mockReagent)
+    expect(handleClose).toHaveBeenCalled()
   })
 })

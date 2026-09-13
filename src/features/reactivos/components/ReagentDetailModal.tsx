@@ -4,13 +4,15 @@ import { Button } from '../../../components/ui/Button'
 import { NFPA704Diamond } from '../../../components/ui/NFPA704Diamond'
 import { StatusBadge } from '../../../components/ui/StatusBadge'
 import type { ReagentItem } from '../services/reagentsService'
-import { ShieldAlert, Tag, Calendar, DollarSign, MapPin, Package, AlertTriangle } from 'lucide-react'
+import { getReagentStockStatus } from '../services/reagentsService'
+import { ShieldAlert, Tag, Calendar, DollarSign, MapPin, Package, AlertTriangle, Layers } from 'lucide-react'
 
 export interface ReagentDetailModalProps {
   isOpen: boolean
   onClose: () => void
   reagent: ReagentItem | null
   onEdit?: (reagent: ReagentItem) => void
+  onOpenStockModal?: (reagent: ReagentItem) => void
   onDeactivate?: (id: string) => Promise<unknown>
   activeLabCodigo?: 'LEPA' | 'LEM'
 }
@@ -20,6 +22,7 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
   onClose,
   reagent,
   onEdit,
+  onOpenStockModal,
   onDeactivate,
   activeLabCodigo = 'LEPA',
 }) => {
@@ -40,6 +43,8 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
     setIsDeactivating(false)
     setShowConfirmDeactivate(false)
   }
+
+  const stockStatus = getReagentStockStatus(reagent)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="lg" title="Detalle del Reactivo">
@@ -108,14 +113,23 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
             </span>
           </div>
 
-          {/* Stock Disponible en Laboratorio Activo */}
+          {/* Stock Disponible en Laboratorio Activo con Indicador HU07 */}
           <div className="p-3.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-between">
             <span className="text-xs sm:text-sm font-sans font-medium text-on-surface-variant flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" /> Stock disponible ({activeLabCodigo})
             </span>
-            <span className="font-sans font-bold text-sm sm:text-base text-on-surface">
-              {stock ? `${stock.cantidad_actual} ${stock.unidad_medida}` : '0 (Sin existencia local)'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-sans font-bold text-sm sm:text-base text-on-surface">
+                {stock ? `${stock.cantidad_actual} ${stock.unidad_medida}` : '0 (Sin existencia)'}
+              </span>
+              {stockStatus === 'SIN_EXISTENCIA' ? (
+                <StatusBadge variant="critico" label="Sin existencia" size="sm" />
+              ) : stockStatus === 'ESCASEZ' ? (
+                <StatusBadge variant="alerta" label="Escasea" size="sm" />
+              ) : (
+                <StatusBadge variant="disponible" label="Disponible" size="sm" />
+              )}
+            </div>
           </div>
 
           {/* Umbral Mínimo */}
@@ -127,6 +141,18 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
               {stock ? `${stock.umbral_minimo} ${stock.unidad_medida}` : 'No definido'}
             </span>
           </div>
+
+          {/* Lote (si existe) */}
+          {stock?.lote && (
+            <div className="p-3.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-between">
+              <span className="text-xs sm:text-sm font-sans font-medium text-on-surface-variant flex items-center gap-2">
+                <Layers className="h-4 w-4 text-primary" /> Número de Lote
+              </span>
+              <span className="font-mono font-medium text-xs sm:text-sm text-on-surface">
+                {stock.lote}
+              </span>
+            </div>
+          )}
 
           {/* Fecha de Vencimiento */}
           <div className="p-3.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-between">
@@ -190,6 +216,20 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
 
         {/* Action Buttons */}
         <div className="w-full pt-3 flex flex-col sm:flex-row gap-3">
+          {onOpenStockModal && (
+            <Button
+              variant="secondary"
+              isFullWidth
+              onClick={() => {
+                onClose()
+                onOpenStockModal(reagent)
+              }}
+              leftIcon={<Package className="h-4 w-4" />}
+            >
+              Gestionar Stock
+            </Button>
+          )}
+
           {onEdit && (
             <Button
               variant="primary"
