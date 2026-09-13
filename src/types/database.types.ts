@@ -90,6 +90,7 @@ export interface Database {
           nfpa_especial: string | null
           es_regulado: boolean
           entidades_regulatorias: string[]
+          es_uso_comun: boolean
           ultimo_precio: number | null
           moneda_precio: 'USD' | 'VES'
           fecha_ultimo_precio: string | null
@@ -109,6 +110,7 @@ export interface Database {
           nfpa_especial?: string | null
           es_regulado?: boolean
           entidades_regulatorias?: string[]
+          es_uso_comun?: boolean
           ultimo_precio?: number | null
           moneda_precio?: 'USD' | 'VES'
           fecha_ultimo_precio?: string | null
@@ -128,6 +130,7 @@ export interface Database {
           nfpa_especial?: string | null
           es_regulado?: boolean
           entidades_regulatorias?: string[]
+          es_uso_comun?: boolean
           ultimo_precio?: number | null
           moneda_precio?: 'USD' | 'VES'
           fecha_ultimo_precio?: string | null

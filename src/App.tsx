@@ -3,10 +3,13 @@ import { Loader2 } from 'lucide-react'
 import { AuthProvider, useAuth, LoginView, OnboardingSetupView } from './features/auth'
 import { LabProvider } from './features/laboratorios'
 import { DashboardView } from './features/dashboard'
+import { InventoryView } from './features/reactivos'
+import type { NavTabId } from './components/ui/BottomNavigation'
 
 export function AppContent(): React.JSX.Element {
   const { user, isGuest, isLoading } = useAuth()
   const [view, setView] = useState<'login' | 'onboarding'>('login')
+  const [activeTab, setActiveTab] = useState<NavTabId>('inventario')
 
   if (isLoading) {
     return (
@@ -19,9 +22,12 @@ export function AppContent(): React.JSX.Element {
     )
   }
 
-  // If user is authenticated or logged in as guest -> Show Dashboard
+  // If user is authenticated or logged in as guest -> Show feature views with bottom nav
   if (user || isGuest) {
-    return <DashboardView />
+    if (activeTab === 'inventario') {
+      return <InventoryView currentTab={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
+    }
+    return <DashboardView currentTab={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
   }
 
   // Unauthenticated routing: Onboarding vs Login

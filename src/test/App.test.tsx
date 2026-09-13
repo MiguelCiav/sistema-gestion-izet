@@ -28,7 +28,7 @@ describe('App Component', () => {
     expect(screen.getByRole('button', { name: 'LEPA' })).toBeInTheDocument()
   })
 
-  it('allows entering as guest and displays Dashboard', async () => {
+  it('allows entering as guest and displays Inventario by default, navigating to Dashboard', async () => {
     render(<App />)
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /ingresar como invitado/i })).toBeInTheDocument()
@@ -38,6 +38,12 @@ describe('App Component', () => {
     fireEvent.click(guestBtn)
 
     expect(await screen.findByText('Terra Lab')).toBeInTheDocument()
-    expect(screen.getByText('Alertas de reactivos')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Inventario' })).toBeInTheDocument()
+
+    // Navigate to Dashboard tab
+    const dashboardTabBtn = screen.getByRole('button', { name: /dashboard/i })
+    fireEvent.click(dashboardTabBtn)
+
+    expect(await screen.findByText('Alertas de reactivos')).toBeInTheDocument()
   })
 })
