@@ -56,6 +56,8 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Fetch registered labs from Supabase
   useEffect(() => {
+    let isMounted = true
+
     const fetchLaboratorios = async () => {
       try {
         const { data, error } = await supabase
@@ -64,9 +66,35 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           .eq('activo', true)
 
         if (!error && data && data.length > 0) {
-          setLaboratorios(data)
+          if (isMounted) setLaboratorios(data)
         } else {
           // Fallback static seeds in case offline/unconnected
+          if (isMounted) {
+            setLaboratorios([
+              {
+                id: 'lepa-seed-id',
+                codigo: 'LEPA',
+                nombre: 'Laboratorio de Ecología de Poblaciones de Artrópodos',
+                descripcion: 'Laboratorio IZT - UCV',
+                activo: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+              {
+                id: 'lem-seed-id',
+                codigo: 'LEM',
+                nombre: 'Laboratorio de Entomología Médica',
+                descripcion: 'Laboratorio IZT - UCV',
+                activo: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+            ])
+          }
+        }
+      } catch {
+        // Fallback static seeds
+        if (isMounted) {
           setLaboratorios([
             {
               id: 'lepa-seed-id',
@@ -88,34 +116,16 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             },
           ])
         }
-      } catch {
-        // Fallback static seeds
-        setLaboratorios([
-          {
-            id: 'lepa-seed-id',
-            codigo: 'LEPA',
-            nombre: 'Laboratorio de Ecología de Poblaciones de Artrópodos',
-            descripcion: 'Laboratorio IZT - UCV',
-            activo: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 'lem-seed-id',
-            codigo: 'LEM',
-            nombre: 'Laboratorio de Entomología Médica',
-            descripcion: 'Laboratorio IZT - UCV',
-            activo: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ])
       } finally {
-        setIsLoadingLabs(false)
+        if (isMounted) setIsLoadingLabs(false)
       }
     }
 
     fetchLaboratorios()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   // Sync with user's assigned lab if not admin

@@ -62,7 +62,8 @@ export const StockModal: React.FC<StockModalProps> = ({
             ? String(reagent.ultimo_precio)
             : ''
         )
-        setMonedaPrecio(stock.moneda_precio || reagent.moneda_precio || 'USD')
+        const resolvedCurrency = stock.moneda_precio || reagent.moneda_precio
+        setMonedaPrecio(resolvedCurrency === 'VES' ? 'VES' : 'USD')
       } else {
         setCantidadActual('')
         setUnidadMedida('ml')
@@ -71,7 +72,7 @@ export const StockModal: React.FC<StockModalProps> = ({
         setLote('')
         setFechaVencimiento('')
         setUltimoPrecio(reagent.ultimo_precio ? String(reagent.ultimo_precio) : '')
-        setMonedaPrecio(reagent.moneda_precio || 'USD')
+        setMonedaPrecio(reagent.moneda_precio === 'VES' ? 'VES' : 'USD')
       }
       setSubmitError(null)
     }

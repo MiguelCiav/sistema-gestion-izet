@@ -45,5 +45,11 @@ describe('App Component', () => {
     fireEvent.click(dashboardTabBtn)
 
     expect(await screen.findByText('Alertas de reactivos')).toBeInTheDocument()
+
+    // Navigate to Bitácora tab
+    const bitacoraTabBtn = screen.getByRole('button', { name: /bitácora/i })
+    fireEvent.click(bitacoraTabBtn)
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Bitácora' })).toBeInTheDocument()
   })
 })

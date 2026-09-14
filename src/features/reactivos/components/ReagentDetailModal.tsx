@@ -5,7 +5,7 @@ import { NFPA704Diamond } from '../../../components/ui/NFPA704Diamond'
 import { StatusBadge } from '../../../components/ui/StatusBadge'
 import type { ReagentItem } from '../services/reagentsService'
 import { getReagentStockStatus } from '../services/reagentsService'
-import { ShieldAlert, Tag, Calendar, DollarSign, MapPin, Package, AlertTriangle, Layers } from 'lucide-react'
+import { ShieldAlert, Tag, Calendar, DollarSign, MapPin, Package, AlertTriangle, Layers, FlaskConical } from 'lucide-react'
 
 export interface ReagentDetailModalProps {
   isOpen: boolean
@@ -13,6 +13,7 @@ export interface ReagentDetailModalProps {
   reagent: ReagentItem | null
   onEdit?: (reagent: ReagentItem) => void
   onOpenStockModal?: (reagent: ReagentItem) => void
+  onOpenConsumeModal?: (reagent: ReagentItem) => void
   onDeactivate?: (id: string) => Promise<unknown>
   activeLabCodigo?: 'LEPA' | 'LEM'
 }
@@ -23,6 +24,7 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
   reagent,
   onEdit,
   onOpenStockModal,
+  onOpenConsumeModal,
   onDeactivate,
   activeLabCodigo = 'LEPA',
 }) => {
@@ -214,6 +216,20 @@ export const ReagentDetailModal: React.FC<ReagentDetailModalProps> = ({
 
         {/* Action Buttons */}
         <div className="w-full pt-3 flex flex-col sm:flex-row gap-3">
+          {onOpenConsumeModal && reagent.stock && reagent.stock.cantidad_actual > 0 && (
+            <Button
+              variant="primary"
+              isFullWidth
+              onClick={() => {
+                onClose()
+                onOpenConsumeModal(reagent)
+              }}
+              leftIcon={<FlaskConical className="h-4 w-4" />}
+            >
+              Registrar Consumo
+            </Button>
+          )}
+
           {onOpenStockModal && (
             <Button
               variant="secondary"

@@ -204,4 +204,50 @@ describe('reagentsService', () => {
     expect(res.data).toBeDefined()
     expect(res.data?.cantidad_actual).toBe(1200)
   })
+
+  describe('consumeReagent (HU05)', () => {
+    it('rejects negative or zero consumption amounts', async () => {
+      const resZero = await reagentsService.consumeReagent({
+        reactivo_id: 'seed-hcl-01',
+        laboratorio_id: 'lepa-lab-001',
+        cantidad: 0,
+      })
+      expect(resZero.success).toBe(false)
+      expect(resZero.error).toContain('mayor a cero')
+
+      const resNegative = await reagentsService.consumeReagent({
+        reactivo_id: 'seed-hcl-01',
+        laboratorio_id: 'lepa-lab-001',
+        cantidad: -10,
+      })
+      expect(resNegative.success).toBe(false)
+      expect(resNegative.error).toContain('mayor a cero')
+    })
+
+    it('rejects consumption exceeding available stock', async () => {
+      const resExceed = await reagentsService.consumeReagent({
+        reactivo_id: 'seed-hcl-01',
+        laboratorio_id: 'lepa-lab-001',
+        cantidad: 999999,
+      })
+      expect(resExceed.success).toBe(false)
+      expect(resExceed.error).toContain('Stock insuficiente')
+    })
+
+    it('successfully consumes stock and updates inventory with bitacora entry', async () => {
+      const result = await reagentsService.consumeReagent({
+        reactivo_id: 'seed-hcl-01',
+        laboratorio_id: 'lepa-lab-001',
+        cantidad: 15,
+        motivo: 'Práctica de titulación docente',
+        nombre_responsable: 'Prof. Gabriel Martínez',
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.error).toBeNull()
+      expect(result.data).toBeDefined()
+      expect(result.data?.cantidad_consumida).toBe(15)
+      expect(result.data?.stock_posterior).toBe((result.data?.stock_anterior ?? 0) - 15)
+    })
+  })
 })
