@@ -4,6 +4,7 @@ export { ReagentCard } from './components/ReagentCard'
 export { ReagentDetailModal } from './components/ReagentDetailModal'
 export { ReagentFormModal } from './components/ReagentFormModal'
 export { StockModal } from './components/StockModal'
+export { ConsumeModal } from './components/ConsumeModal'
 export { useReagents } from './hooks/useReagents'
 export {
   reagentsService,
@@ -16,5 +17,7 @@ export {
   type StockStatusType,
   type StockAlert,
   type UpsertStockInput,
+  type ConsumeReagentInput,
+  type ConsumeReagentResult,
 } from './services/reagentsService'
 

@@ -109,7 +109,7 @@ export const ReagentFormModal: React.FC<ReagentFormModalProps> = ({
       setEntidades(reagentToEdit.entidades_regulatorias || [])
       setEsUsoComun(reagentToEdit.es_uso_comun ?? false)
       setUltimoPrecio(reagentToEdit.ultimo_precio ? String(reagentToEdit.ultimo_precio) : '')
-      setMonedaPrecio(reagentToEdit.moneda_precio)
+      setMonedaPrecio(reagentToEdit.moneda_precio === 'VES' ? 'VES' : 'USD')
       setFechaUltimoPrecio(reagentToEdit.fecha_ultimo_precio || '')
       setIsCodeAvailable(true)
     } else {

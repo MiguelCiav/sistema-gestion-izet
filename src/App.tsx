@@ -4,6 +4,7 @@ import { AuthProvider, useAuth, LoginView, OnboardingSetupView } from './feature
 import { LabProvider } from './features/laboratorios'
 import { DashboardView } from './features/dashboard'
 import { InventoryView } from './features/reactivos'
+import { BitacoraView } from './features/bitacora'
 import type { NavTabId } from './components/ui/BottomNavigation'
 
 export function AppContent(): React.JSX.Element {
@@ -26,6 +27,9 @@ export function AppContent(): React.JSX.Element {
   if (user || isGuest) {
     if (activeTab === 'inventario') {
       return <InventoryView currentTab={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
+    }
+    if (activeTab === 'bitacora') {
+      return <BitacoraView currentTab={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
     }
     return <DashboardView currentTab={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
   }

@@ -7,6 +7,7 @@ import {
   type CatalogoReactivoUpdate,
   type UpsertStockInput,
   type StockAlert,
+  type ConsumeReagentInput,
 } from '../services/reagentsService'
 import { useLab } from '../../laboratorios'
 
@@ -37,6 +38,10 @@ export const useReagents = () => {
   // Stock Modal state (HU04)
   const [isStockModalOpen, setIsStockModalOpen] = useState(false)
   const [stockReagent, setStockReagent] = useState<ReagentItem | null>(null)
+
+  // Consume Modal state (HU05)
+  const [isConsumeModalOpen, setIsConsumeModalOpen] = useState(false)
+  const [reagentToConsume, setReagentToConsume] = useState<ReagentItem | null>(null)
 
   const loadReagents = useCallback(async () => {
     setIsLoading(true)
@@ -188,6 +193,41 @@ export const useReagents = () => {
     return { success: true, error: null }
   }
 
+  const handleOpenConsume = (reagent?: ReagentItem) => {
+    setReagentToConsume(reagent || null)
+    setIsConsumeModalOpen(true)
+  }
+
+  const handleCloseConsume = () => {
+    setIsConsumeModalOpen(false)
+    setReagentToConsume(null)
+  }
+
+  const handleConsumeReagent = async (input: ConsumeReagentInput) => {
+    const result = await reagentsService.consumeReagent(input)
+    if (!result.success || result.error) {
+      return { success: false, error: result.error || 'Error al registrar consumo' }
+    }
+    await loadReagents()
+    if (selectedReagent?.id === input.reactivo_id && result.data) {
+      setSelectedReagent((prev) =>
+        prev
+          ? {
+              ...prev,
+              stock: prev.stock
+                ? {
+                    ...prev.stock,
+                    cantidad_actual: result.data!.stock_posterior,
+                    estado_fisico: result.data!.estado_fisico,
+                  }
+                : null,
+            }
+          : null
+      )
+    }
+    return { success: true, error: null, data: result.data }
+  }
+
   const toggleFilter = (key: keyof ReagentFilters) => {
     setFilters((prev) => ({
       ...prev,
@@ -227,6 +267,13 @@ export const useReagents = () => {
     openStockModal: handleOpenStockModal,
     closeStockModal: handleCloseStockModal,
     upsertStock: handleUpsertStock,
+
+    // Consume modal (HU05)
+    isConsumeModalOpen,
+    reagentToConsume,
+    openConsume: handleOpenConsume,
+    closeConsume: handleCloseConsume,
+    consumeReagent: handleConsumeReagent,
 
     // Stock Alerts (HU07)
     stockAlerts,

@@ -10,6 +10,7 @@ import { ReagentCard } from '../components/ReagentCard'
 import { ReagentDetailModal } from '../components/ReagentDetailModal'
 import { ReagentFormModal } from '../components/ReagentFormModal'
 import { StockModal } from '../components/StockModal'
+import { ConsumeModal } from '../components/ConsumeModal'
 import { useReagents } from '../hooks/useReagents'
 import { useLab } from '../../laboratorios'
 import { useAuth } from '../../auth'
@@ -73,6 +74,12 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
     closeStockModal,
     upsertStock,
     stockAlerts,
+    allReagents,
+    openConsume,
+    closeConsume,
+    consumeReagent,
+    isConsumeModalOpen,
+    reagentToConsume,
   } = useReagents()
 
   return (
@@ -99,15 +106,26 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={reloadReagents}
-            className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
-            title="Recargar catálogo"
-            aria-label="Recargar catálogo"
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin text-primary' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => openConsume()}
+              leftIcon={<FlaskConical className="h-3.5 w-3.5" />}
+              className="text-xs"
+            >
+              Consumir
+            </Button>
+            <button
+              type="button"
+              onClick={reloadReagents}
+              className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
+              title="Recargar catálogo"
+              aria-label="Recargar catálogo"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin text-primary' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* Active stock alerts banner (HU07) */}
@@ -315,6 +333,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
         reagent={selectedReagent}
         onEdit={(reagent) => openEdit(reagent)}
         onOpenStockModal={(reagent) => openStockModal(reagent)}
+        onOpenConsumeModal={(reagent) => openConsume(reagent)}
         onDeactivate={deactivateReagent}
         activeLabCodigo={activeLab}
       />
@@ -327,6 +346,18 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
         activeLabCodigo={activeLab}
         activeLabId={activeLabId}
         onSubmitStock={upsertStock}
+      />
+
+      {/* Reagent Consumption Modal (HU05) */}
+      <ConsumeModal
+        isOpen={isConsumeModalOpen}
+        onClose={closeConsume}
+        reagent={reagentToConsume}
+        availableReagents={allReagents}
+        activeLabId={activeLabId}
+        activeLabCodigo={activeLab}
+        defaultUserName={profile?.nombre_completo || (isGuest ? 'Invitado' : 'Personal de Laboratorio')}
+        onConfirmConsume={consumeReagent}
       />
 
       {/* Reagent Create / Edit Form Modal */}

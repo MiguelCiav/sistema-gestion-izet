@@ -1,5 +1,6 @@
 import { supabase } from '../../../lib/supabase'
 import type { Database } from '../../../types/database.types'
+import { bitacoraService } from '../../bitacora/services/bitacoraService'
 
 export type CatalogoReactivo = Database['public']['Tables']['catalogo_reactivos']['Row']
 export type CatalogoReactivoInsert = Database['public']['Tables']['catalogo_reactivos']['Insert']
@@ -38,9 +39,9 @@ export interface ReagentItem extends CatalogoReactivo {
     fecha_vencimiento: string | null
     lote: string | null
     ultimo_precio_adquirido?: number | null
-    moneda_precio?: 'USD' | 'VES'
+    moneda_precio?: string | null
     es_uso_comun?: boolean
-    estado_fisico: 'DISPONIBLE' | 'EN_PRESTAMO' | 'AGOTADO'
+    estado_fisico?: string | null
   } | null
 }
 
@@ -76,6 +77,27 @@ export interface CreateReagentInput extends CatalogoReactivoInsert {
     umbral_minimo: number
     fecha_vencimiento?: string | null
     lote?: string | null
+  }
+}
+
+export interface ConsumeReagentInput {
+  reactivo_id: string
+  laboratorio_id: string
+  cantidad: number
+  motivo?: string
+  nombre_responsable?: string
+}
+
+export interface ConsumeReagentResult {
+  success: boolean
+  error: string | null
+  data?: {
+    bitacora_id?: string
+    stock_anterior: number
+    stock_posterior: number
+    cantidad_consumida: number
+    unidad_medida: string
+    estado_fisico: string
   }
 }
 
@@ -434,7 +456,7 @@ export const reagentsService = {
             ultimo_precio_adquirido: fallbackTarget.stock.ultimo_precio_adquirido ?? null,
             moneda_precio: fallbackTarget.stock.moneda_precio ?? 'USD',
             es_uso_comun: fallbackTarget.stock.es_uso_comun ?? false,
-            estado_fisico: fallbackTarget.stock.estado_fisico,
+            estado_fisico: fallbackTarget.stock.estado_fisico ?? 'DISPONIBLE',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           }
@@ -673,6 +695,109 @@ export const reagentsService = {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al eliminar reactivo'
       return { error: new Error(message) }
+    }
+  },
+
+  /**
+   * HU05: Registra el consumo de un reactivo descontando stock de forma atómica y asentando la bitácora
+   */
+  async consumeReagent(input: ConsumeReagentInput): Promise<ConsumeReagentResult> {
+    const cantidad = Number(input.cantidad)
+    if (isNaN(cantidad) || cantidad <= 0) {
+      return {
+        success: false,
+        error: 'La cantidad a consumir debe ser un número estrictamente mayor a cero',
+      }
+    }
+
+    try {
+      // 1. Invocar RPC atómica en Supabase
+      const { data, error } = await supabase.rpc('registrar_consumo_reactivo', {
+        p_reactivo_id: input.reactivo_id,
+        p_laboratorio_id: input.laboratorio_id,
+        p_cantidad: cantidad,
+        p_motivo: input.motivo || undefined,
+        p_nombre_responsable: input.nombre_responsable || undefined,
+      })
+
+      if (error) {
+        // Fallback local en memoria para tests y modo offline
+        const target = FALLBACK_REAGENTS.find((r) => r.id === input.reactivo_id)
+        if (target && target.stock) {
+          if (target.stock.cantidad_actual < cantidad) {
+            return {
+              success: false,
+              error: `Stock insuficiente. Disponible: ${target.stock.cantidad_actual} ${target.stock.unidad_medida}, Solicitado: ${cantidad} ${target.stock.unidad_medida}`,
+            }
+          }
+
+          const stockAnterior = target.stock.cantidad_actual
+          const stockPosterior = stockAnterior - cantidad
+          target.stock.cantidad_actual = stockPosterior
+          target.stock.estado_fisico = stockPosterior === 0 ? 'AGOTADO' : 'DISPONIBLE'
+
+          // Registrar en bitácora local
+          const bitacoraId = `bit-${Date.now()}`
+          bitacoraService.addFallbackMovimiento({
+            id: bitacoraId,
+            laboratorio_id: input.laboratorio_id,
+            reactivo_id: input.reactivo_id,
+            usuario_id: null,
+            nombre_responsable: input.nombre_responsable || 'Personal de Laboratorio',
+            tipo_movimiento: 'CONSUMO',
+            cantidad,
+            unidad_medida: target.stock.unidad_medida,
+            stock_anterior: stockAnterior,
+            stock_posterior: stockPosterior,
+            motivo: input.motivo || null,
+            created_at: new Date().toISOString(),
+            reactivo: {
+              id: target.id,
+              codigo_unico: target.codigo_unico,
+              nombre: target.nombre,
+              formula_quimica: target.formula_quimica,
+              nfpa_salud: target.nfpa_salud,
+              nfpa_inflamabilidad: target.nfpa_inflamabilidad,
+              nfpa_inestabilidad: target.nfpa_inestabilidad,
+              nfpa_especial: target.nfpa_especial,
+              clasificacion_riesgo: target.clasificacion_riesgo,
+            },
+          })
+
+          return {
+            success: true,
+            error: null,
+            data: {
+              bitacora_id: bitacoraId,
+              stock_anterior: stockAnterior,
+              stock_posterior: stockPosterior,
+              cantidad_consumida: cantidad,
+              unidad_medida: target.stock.unidad_medida,
+              estado_fisico: target.stock.estado_fisico ?? 'DISPONIBLE',
+            },
+          }
+        }
+
+        return { success: false, error: error.message }
+      }
+
+      const res = data as {
+        bitacora_id?: string
+        stock_anterior: number
+        stock_posterior: number
+        cantidad_consumida: number
+        unidad_medida: string
+        estado_fisico: string
+      }
+
+      return {
+        success: true,
+        error: null,
+        data: res,
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error inesperado al registrar consumo'
+      return { success: false, error: msg }
     }
   },
 }
